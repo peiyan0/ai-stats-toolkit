@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 40px;">
+    <h1>Independent Samples T-Test</h1>
+    <p style="color: var(--text-muted);">Compare means between exactly two independent groups.</p>
+</div>
+
+<div class="grid-2">
+    <!-- Input Section -->
+    <div class="glass-card animate-up">
+        <h3><i class="fas fa-edit"></i> Group Configuration</h3>
+        <form method="POST" style="margin-top: 20px;">
+            <div class="form-group mb-4">
+                <label for="t_test_data">Data Format (group1:v1,v2;group2:v3,v4):</label>
+                <textarea name="t_test_data" id="t_test_data" class="form-control" rows="5" placeholder="Experimental: 15, 18, 22; Control: 12, 14, 16">{% if input_data %}{{ input_data }}{% endif %}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Perform T-Test Analysis</button>
+        </form>
+        
+        <div style="margin-top: 30px;">
+            <h4><i class="fas fa-database"></i> Sample Datasets</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                {% for sample in samples %}
+                <button class="btn btn-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted);" 
+                        onclick="document.getElementById('t_test_data').value='{{ sample.data }}'">
+                    {{ sample.name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="glass-card animate-up" style="animation-delay: 0.1s;">
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+            <h3><i class="fas fa-poll"></i> Statistical Results</h3>
+            
+            <div class="grid-2" style="margin-top: 25px; gap: 1.5rem;">
+                <div class="glass-card" style="padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--primary);">
+                    <small style="color: var(--text-muted);">T-Statistic</small>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--text-main);">{{ result.t_stat }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--accent);">
+                    <small style="color: var(--text-muted);">P-Value</small>
+                    <div style="font-size: 2rem; font-weight: bold; color: {% if result.p_value < 0.05 %}#10b981{% else %}#ef4444{% endif %};">
+                        {{ result.p_value }}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <table style="width: 100%; color: var(--text-muted); border-collapse: collapse;">
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 12px;"><i class="fas fa-ruler"></i> Degrees of Freedom (df)</td>
+                        <td style="padding: 12px; text-align: right; color: var(--text-main);">{{ result.df }}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 12px;"><i class="fas fa-arrows-alt-h"></i> Mean Difference</td>
+                        <td style="padding: 12px; text-align: right; color: var(--text-main);">{{ result.mean_diff }}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <td style="padding: 12px;"><i class="fas fa-wave-square"></i> Standard Error</td>
+                        <td style="padding: 12px; text-align: right; color: var(--text-main);">{{ result.se }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px;"><i class="fas fa-users"></i> Group Means</td>
+                        <td style="padding: 12px; text-align: right; color: var(--text-main);">
+                            {{ group_names[0] }}: {{ result.mean1 }} | {{ group_names[1] }}: {{ result.mean2 }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- AI Insight Box -->
+            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);">
+                <h4 style="color: var(--accent);"><i class="fas fa-robot" aria-hidden="true"></i> Consultant Insight</h4>
+                <div id="ai-content" style="color: var(--text-main); line-height: 1.6;">
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span id="loading-text">Negotiating with the Null Hypothesis...</span>
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 60px 0; color: var(--text-muted);">
+                <i class="fas fa-balance-scale fa-4x mb-4"></i>
+                <p>Input group data to compare means and determine statistical significance.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if result %}
+<script>
+    const loadingMessages = [
+        "Consulting the statistical oracle...",
+        "Negotiating with the Null Hypothesis...",
+        "Polishing the bell curve...",
+        "Checking p-values for cosmic significance...",
+        "Ensuring our p-values are organic and locally sourced..."
+    ];
+    document.getElementById('loading-text').innerText = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/ai/interpret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                test_name: "Independent Samples T-Test",
+                data_summary: "Group 1: {{ group_names[0] }}, Group 2: {{ group_names[1] }}",
+                results: {{ result | tojson }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ai-content').innerHTML = data.interpretation;
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

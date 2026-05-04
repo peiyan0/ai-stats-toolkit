@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 40px;">
+    <h1>Normal Distribution Analysis</h1>
+    <p style="color: var(--text-muted);">Calculate Z-scores, P-values, and probabilities for continuous data.</p>
+</div>
+
+<div class="grid-2">
+    <!-- Input Section -->
+    <div class="glass-card animate-up">
+        <h3><i class="fas fa-edit"></i> Parameters</h3>
+        <form method="POST" style="margin-top: 20px;">
+            <div class="form-group mb-3">
+                <label for="x">Observed Value (x)</label>
+                <input type="number" name="x" id="x" class="form-control" step="any" value="{{ x if x is defined else '' }}" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="mu">Mean (μ)</label>
+                <input type="number" name="mu" id="mu" class="form-control" step="any" value="{{ mu if mu is defined else '' }}" required>
+            </div>
+            <div class="form-group mb-4">
+                <label for="sigma">Standard Deviation (σ)</label>
+                <input type="number" name="sigma" id="sigma" class="form-control" step="any" value="{{ sigma if sigma is defined else '' }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Calculate Probabilities</button>
+        </form>
+    </div>
+
+    <!-- Results Section -->
+    <div class="glass-card animate-up" style="animation-delay: 0.1s;">
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+            <h3><i class="fas fa-poll"></i> Z-Score & P-Values</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 20px;">
+                <div class="glass-card" style="padding: 1rem; background: rgba(56, 189, 248, 0.05); text-align: center;">
+                    <small style="color: var(--text-muted);">Z-Score</small>
+                    <div style="font-size: 1.5rem; font-weight: bold;">{{ result.z_score }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(244, 114, 182, 0.05); text-align: center;">
+                    <small style="color: var(--text-muted);">Two-Tail P</small>
+                    <div style="font-size: 1.5rem; font-weight: bold;">{{ result.p_two_tail }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(129, 140, 248, 0.05);">
+                    <small style="color: var(--text-muted);">P(X < x) - Left</small>
+                    <div style="font-size: 1.2rem; font-weight: bold;">{{ result.p_left_tail }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(251, 191, 36, 0.05);">
+                    <small style="color: var(--text-muted);">P(X > x) - Right</small>
+                    <div style="font-size: 1.2rem; font-weight: bold;">{{ result.p_right_tail }}</div>
+                </div>
+            </div>
+
+            <!-- AI Insight Box -->
+            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);">
+                <h4 style="color: var(--accent);"><i class="fas fa-robot" aria-hidden="true"></i> Consultant Insight</h4>
+                <div id="ai-content" style="color: var(--text-main); line-height: 1.6;">
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Analyzing probability distribution...
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 60px 0; color: var(--text-muted);">
+                <i class="fas fa-bell fa-4x mb-4"></i>
+                <p>Calculate area under the normal curve and test for statistical significance.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if result %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/ai/interpret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                test_name: "Normal Distribution Analysis",
+                data_summary: "Mu={{ mu }}, Sigma={{ sigma }}, X={{ x }}",
+                results: {{ result | tojson }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ai-content').innerHTML = data.interpretation;
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}
