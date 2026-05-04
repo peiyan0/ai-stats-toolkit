@@ -1,101 +1,59 @@
 {% extends "base.html" %}
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
-{% endblock %}
-
 {% block content %}
-<div class="container home-container">
-    <div class="hero-section text-center py-5 mb-5">
-        <h1 class="display-4 mb-3">Statistical Analysis Toolkit</h1>
-        <p class="lead">Powerful, easy-to-use statistical calculations at your fingertips</p>
-        <a href="/calculations" class="btn btn-primary btn-lg mt-3">Get Started</a>
-    </div>
-
-    <div class="row features-section mt-3">
-        <a href="calculations" class="col-md-6 feature-card">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-calculator fa-3x mb-3 text-primary"></i>
-                    <h3>Comprehensive Tools</h3>
-                    <p>From basic descriptive statistics to advanced regression analysis, we've got you covered.</p>
-                </div>
-            </div>
-        </a>
-        <a href="datasets" class="col-md-6 feature-card">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-database fa-3x mb-3 text-primary"></i>
-                    <h3>Sample Datasets</h3>
-                    <p>Quickly test features with our curated sample datasets or upload your own data.</p>
-                </div>
-            </div>
-        </a>
-        <a href="history" class="col-md-6 feature-card">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-history fa-3x mb-3 text-primary"></i>
-                    <h3>Calculation History</h3>
-                    <p>All your analyses are saved for future reference and comparison.</p><br>
-                </div>
-            </div>
-        </a>
-        <a href="how_to_use" class="col-md-6 feature-card">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-rocket fa-3x mb-3 text-primary"></i>
-                    <h3>Quick Start Guide</h3>
-                    <p>Get up and running quickly with our step-by-step tutorials and sample workflows.</p>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="quick-start-section mb-5">
-        <h2 class="text-center mb-4">Quick Start Guide</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h4>For Beginners</h4>
-                    </div>
-                    <div class="card-body">
-                        <ol>
-                            <li>Visit the <a href="/how_to_use">How to Use</a> page for instructions</li>
-                            <li>Try our sample datasets to see the tool in action</li>
-                            <li>Start with Descriptive Statistics to understand your data</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h4>For Advanced Users</h4>
-                    </div>
-                    <div class="card-body">
-                        <ul>
-                            <li>Use the <a href="/calculations/linear">Linear Regression</a> tool for predictive modeling</li>
-                            <li>Perform <a href="/calculations/anova">ANOVA</a> to compare multiple groups</li>
-                            <li>Calculate <a href="/calculations/confidence">confidence intervals</a> for your estimates</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="recent-calculations mb-5">
-        <h2 class="text-center mb-4">Recently Added Features</h2>
-        <div class="card">
-            <div class="card-body">
-                <ul class="feature-list">
-                    <li><strong>Outlier Detection:</strong> &nbsp; Automatically identify outliers in your data</li>
-                    <li><strong>Enhanced Visualization:</strong> &nbsp; Better graphical representation of results</li>
-                    <li><strong>Export Options:</strong> &nbsp; Download your results in multiple formats</li>
-                </ul>
-            </div>
-        </div>
+<div class="hero animate-up" style="padding: 100px 0; text-align: center;">
+    <h1 style="font-size: 4rem; margin-bottom: 20px;">Precision Analytics.<br><span style="background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Smarter Insights.</span></h1>
+    <p style="font-size: 1.25rem; color: var(--text-main); max-width: 700px; margin: 0 auto 40px; line-height: 1.6;">
+        The ultimate statistical toolkit for modern researchers. Powered by local AI for private, professional-grade analysis without the cost.
+    </p>
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <a href="/calculations" class="btn btn-primary btn-lg">Explore Tools</a>
+        <a href="/ai/wizard" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white;">Try AI Wizard</a>
     </div>
 </div>
+
+<div class="grid-2 animate-up" style="margin-bottom: 80px;">
+    <div class="glass-card">
+        <i class="fas fa-magic fa-2x" style="color: var(--accent); margin-bottom: 20px;"></i>
+        <h3>AI Statistical Consultant</h3>
+        <p style="color: var(--text-muted);">Not a math expert? No problem. Our local AI wizard recommends the best tests for your data and interprets results in plain English.</p>
+    </div>
+    <div class="glass-card">
+        <i class="fas fa-shield-alt fa-2x" style="color: var(--primary); margin-bottom: 20px;"></i>
+        <h3>Private & Secure</h3>
+        <p style="color: var(--text-muted);">Your research data never leaves your machine. We use Ollama to run high-performance models locally on your hardware.</p>
+    </div>
+</div>
+
+<div class="section-header" style="text-align: center; margin-bottom: 40px;">
+    <h2>Core Capabilities</h2>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 100px;">
+    <a href="/calculations/descriptive" style="text-decoration: none;">
+        <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+            <i class="fas fa-chart-pie" style="color: #38bdf8;"></i>
+            <h4 style="margin-top: 10px;">Descriptive Stats</h4>
+        </div>
+    </a>
+    <a href="/calculations/anova" style="text-decoration: none;">
+        <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+            <i class="fas fa-vials" style="color: #818cf8;"></i>
+            <h4 style="margin-top: 10px;">ANOVA</h4>
+        </div>
+    </a>
+    <a href="/calculations/linear" style="text-decoration: none;">
+        <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+            <i class="fas fa-project-diagram" style="color: #f472b6;"></i>
+            <h4 style="margin-top: 10px;">Linear Regression</h4>
+        </div>
+    </a>
+    <a href="/calculations/confidence" style="text-decoration: none;">
+        <div class="glass-card" style="padding: 1.5rem; text-align: center;">
+            <i class="fas fa-percentage" style="color: #fbbf24;"></i>
+            <h4 style="margin-top: 10px;">Confidence Intervals</h4>
+        </div>
+    </a>
+</div>
+
 {% endblock %}

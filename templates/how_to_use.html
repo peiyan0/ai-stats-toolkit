@@ -1,81 +1,57 @@
 {% extends "base.html" %}
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='how.css') }}">
-{% endblock %}
-
 {% block content %}
-<div class="container how-to-use-container">
-    <h1>How to Use This Tool</h1>
-    
-    <div class="row">
-        <div class="col-md-8">
-            <h3>Descriptive Statistics</h3>
-            <ul>
-                <li>Enter comma-separated numbers or select a sample dataset</li>
-                <li>View comprehensive statistics including:
-                    <ul>
-                        <li>Mean, median, and mode</li>
-                        <li>Range, variance, and standard deviation</li>
-                        <li>Quartiles and outlier detection</li>
-                    </ul>
-                </li>
-            </ul>
+<div class="page-header" style="margin-bottom: 40px;">
+    <h1>Documentation & Guidance</h1>
+    <p style="color: var(--text-muted);">Master the Statistics Toolkit and our AI-augmented features.</p>
+</div>
 
-            <h3>Linear Regression</h3>
-            <ul>
-                <li>Enter paired X and Y values as comma-separated lists</li>
-                <li>Results include:
-                    <ul>
-                        <li>Regression equation (y = mx + b)</li>
-                        <li>R² (coefficient of determination)</li>
-                        <li>Correlation coefficient</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>ANOVA</h3>
-            <ul>
-                <li>Enter data in format: "group1:1,2,3;group2:4,5,6"</li>
-                <li>Detailed ANOVA table includes:
-                    <ul>
-                        <li>F-test statistic</li>
-                        <li>Degrees of freedom</li>
-                        <li>Sum of squares (between/within)</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>Confidence Intervals</h3>
-            <ul>
-                <li>Three types available:
-                    <ul>
-                        <li><strong>Two Population CI:</strong> Compare means from two samples</li>
-                        <li><strong>Dependent Data T-Test:</strong> Analyze before/after measurements</li>
-                        <li><strong>Two Sample Proportion:</strong> Compare proportions between groups</li>
-                    </ul>
-                </li>
-            </ul>
+<div class="grid-2" style="grid-template-columns: 2fr 1fr; gap: 3rem;">
+    <div>
+        <div class="glass-card animate-up" style="margin-bottom: 2rem;">
+            <h3><i class="fas fa-magic" style="color: var(--accent);"></i> The AI Wizard</h3>
+            <p style="color: var(--text-muted); margin-top: 10px;">Our flagship feature. If you're unsure which statistical test to use, simply describe your data and goals in the Wizard. It will recommend the most appropriate method based on your group count and data types.</p>
         </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Tips & Notes</h4>
+
+        <div class="glass-card animate-up" style="margin-bottom: 2rem; animation-delay: 0.1s;">
+            <h3><i class="fas fa-chart-pie" style="color: var(--primary);"></i> Calculation Modules</h3>
+            <div style="display: grid; gap: 1.5rem; margin-top: 20px;">
+                <div style="border-left: 2px solid var(--glass-border); padding-left: 20px;">
+                    <h4 style="margin-bottom: 5px;">Descriptive Statistics</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Input a list of numbers to get Mean, Median, Std Dev, and automatically identify outliers using the IQR method.</p>
                 </div>
-                <div class="card-body">
-                    <ul>
-                        <li>Sample datasets are provided for quick testing</li>
-                        <li>All calculations are performed server-side</li>
-                        <li>Results are rounded to 4 decimal places</li>
-                        <li>Your calculation history is saved for reference</li>
-                    </ul>
-                    <p class="mt-3">For detailed documentation, please contact our support team.</p>
+                <div style="border-left: 2px solid var(--glass-border); padding-left: 20px;">
+                    <h4 style="margin-bottom: 5px;">Linear Regression</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Input X and Y pairs to find the line of best fit. The tool provides the equation, R², and an interactive scatter plot.</p>
+                </div>
+                <div style="border-left: 2px solid var(--glass-border); padding-left: 20px;">
+                    <h4 style="margin-bottom: 5px;">ANOVA</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Format your data as <code>group:1,2,3;group:4,5,6</code> to compare means across multiple populations with <strong>Effect Size (η², ω²)</strong> analysis.</p>
+                </div>
+                <div style="border-left: 2px solid var(--glass-border); padding-left: 20px;">
+                    <h4 style="margin-bottom: 5px;">Normal Distribution</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Input observed values, mean, and standard deviation to calculate <strong>Z-scores</strong> and <strong>P-values</strong> instantly.</p>
                 </div>
             </div>
         </div>
     </div>
-    
-    <p class="text-center mt-4">Happy analyzing! We hope this tool helps with your statistical needs.</p>
+
+    <aside>
+        <div class="glass-card animate-up" style="animation-delay: 0.2s;">
+            <h3>Pro Tips</h3>
+            <ul style="list-style: none; padding: 0; color: var(--text-muted); font-size: 0.9rem; display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                <li><i class="fas fa-check-circle" style="color: var(--secondary);"></i> Use <strong>Sample Datasets</strong> from the datasets page to test logic before entering large datasets.</li>
+                <li><i class="fas fa-check-circle" style="color: var(--secondary);"></i> All AI insights are generated <strong>locally</strong> via Ollama—your data never leaves your computer.</li>
+                <li><i class="fas fa-check-circle" style="color: var(--secondary);"></i> Hover over <strong>Chart Points</strong> in regression and descriptive plots for exact values.</li>
+                <li><i class="fas fa-check-circle" style="color: var(--secondary);"></i> Check your <strong>History</strong> to compare results from different parameters side-by-side.</li>
+            </ul>
+        </div>
+    </aside>
+</div>
+
+<div class="glass-card text-center animate-up" style="margin-top: 60px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(129, 140, 248, 0.1));">
+    <h2>Ready to start?</h2>
+    <p style="color: var(--text-muted); margin-bottom: 30px;">Jump straight into the AI Wizard for a guided experience.</p>
+    <a href="/ai/wizard" class="btn btn-primary">Open AI Wizard</a>
 </div>
 {% endblock %}

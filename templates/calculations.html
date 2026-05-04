@@ -1,39 +1,67 @@
 {% extends "base.html" %}
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='calculations.css') }}">
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <h1>Statistical Calculations</h1>
-    <p class="lead">Choose a calculation method:</p>
-    
-    <div class="calculation-grid">
-        <div class="calculation-button">
-            <a href="/calculations/anova">
-                <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                <span>ANOVA</span>
-            </a>
+<div class="page-header" style="margin-bottom: 40px; text-align: center;">
+    <h1>Analytical Suites</h1>
+    <p style="color: var(--text-muted);">Select a module to begin your professional statistical inquiry.</p>
+</div>
+
+<div class="grid-2" style="margin-bottom: 50px;">
+    <a href="/calculations/descriptive" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid var(--primary);">
+            <i class="fas fa-calculator fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+            <h3>Descriptive Suite</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Comprehensive summaries, skewness, and outlier detection.</p>
         </div>
-        <div class="calculation-button">
-            <a href="/calculations/confidence">
-                <i class="fas fa-chart-line fa-2x mb-2"></i>
-                <span>Confidence Interval</span>
-            </a>
+    </a>
+    <a href="/calculations/anova" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid var(--secondary); animation-delay: 0.05s;">
+            <i class="fas fa-microscope fa-3x" style="color: var(--secondary); margin-bottom: 20px;"></i>
+            <h3>Hypothesis (ANOVA)</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Multi-group comparison and variance analysis.</p>
         </div>
-        <div class="calculation-button">
-            <a href="/calculations/descriptive">
-                <i class="fas fa-calculator fa-2x mb-2"></i>
-                <span>Descriptive Statistics</span>
-            </a>
+    </a>
+    <a href="/calculations/t-test" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid #8b5cf6; animation-delay: 0.08s;">
+            <i class="fas fa-balance-scale fa-3x" style="color: #8b5cf6; margin-bottom: 20px;"></i>
+            <h3>Hypothesis (T-Test)</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Two-group mean comparison with significance testing.</p>
         </div>
-        <div class="calculation-button">
-            <a href="/calculations/linear">
-                <i class="fas fa-project-diagram fa-2x mb-2"></i>
-                <span>Linear Regression</span>
-            </a>
+    </a>
+    <a href="/calculations/linear" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid var(--accent); animation-delay: 0.1s;">
+            <i class="fas fa-project-diagram fa-3x" style="color: var(--accent); margin-bottom: 20px;"></i>
+            <h3>Modeling (Linear)</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Regression modeling, trend lines, and correlation.</p>
         </div>
-    </div>
+    </a>
+    <a href="/calculations/predictive" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid #ef4444; animation-delay: 0.12s;">
+            <i class="fas fa-brain fa-3x" style="color: #ef4444; margin-bottom: 20px;"></i>
+            <h3>Predictive Suite</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Advanced ML models for forecasting and classification.</p>
+        </div>
+    </a>
+    <a href="/calculations/normal" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid #fbbf24; animation-delay: 0.15s;">
+            <i class="fas fa-bell fa-3x" style="color: #fbbf24; margin-bottom: 20px;"></i>
+            <h3>Probability (Normal)</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Z-scores, P-values, and distribution modeling.</p>
+        </div>
+    </a>
+    <a href="/calculations/confidence" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid #10b981; animation-delay: 0.2s;">
+            <i class="fas fa-percentage fa-3x" style="color: #10b981; margin-bottom: 20px;"></i>
+            <h3>Inference (CI)</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Confidence intervals for means and proportions.</p>
+        </div>
+    </a>
+    <a href="/ai/wizard" style="text-decoration: none;">
+        <div class="glass-card animate-up" style="text-align: center; border-left: 4px solid var(--text-main); animation-delay: 0.25s; background: rgba(255,255,255,0.05);">
+            <i class="fas fa-magic fa-3x" style="color: var(--text-main); margin-bottom: 20px;"></i>
+            <h3>AI Wizard</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Guided assistance to find the right statistical test.</p>
+        </div>
+    </a>
 </div>
 {% endblock %}
