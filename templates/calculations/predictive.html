@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 40px;">
+    <h1>Predictive Analytics Suite</h1>
+    <p style="color: var(--text-muted);">Leverage Scikit-Learn to move from summarizing data to predicting future outcomes.</p>
+</div>
+
+<div class="grid-2">
+    <!-- Configuration Section -->
+    <div class="glass-card animate-up">
+        <h3><i class="fas fa-brain"></i> Model Configuration</h3>
+        <form method="POST" style="margin-top: 20px;">
+            <div class="form-group mb-4">
+                <label for="model_type">Model Objective:</label>
+                <select name="model_type" id="model_type" class="form-control glass-input">
+                    <option value="linear" {% if model_type == 'linear' %}selected{% endif %}>Linear Regression (Predict Value)</option>
+                    <option value="logistic" {% if model_type == 'logistic' %}selected{% endif %}>Logistic Regression (Classify Category)</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="ml_data">Data Format (Target:y1,y2;Feature:x1,x2):</label>
+                <textarea name="ml_data" id="ml_data" class="form-control" rows="8" placeholder="Price: 200, 250, 300, 350, 400;&#10;Bedrooms: 2, 3, 3, 4, 4;&#10;Sqft: 1200, 1500, 1600, 2000, 2200">{% if input_data %}{{ input_data }}{% endif %}</textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 glow-button">Train & Evaluate Model</button>
+        </form>
+
+        <div style="margin-top: 30px;">
+            <h4><i class="fas fa-database"></i> Predictive Samples</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                {% for sample in samples %}
+                <button class="btn btn-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted);" 
+                        onclick="document.getElementById('ml_data').value='{{ sample.data }}'; document.getElementById('model_type').value='{{ sample.type }}'">
+                    {{ sample.name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 15px; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px dashed var(--primary);">
+            <small style="color: var(--text-muted);">
+                <i class="fas fa-info-circle"></i> <strong>Tip:</strong> The first variable is the <strong>Target</strong> (what you want to predict). 
+                Subsequent variables are <strong>Features</strong> (the inputs).
+            </small>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="glass-card animate-up" style="animation-delay: 0.1s;">
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3><i class="fas fa-chart-line"></i> Model Performance</h3>
+                <span class="badge" style="background: var(--primary); padding: 5px 12px; border-radius: 20px;">{{ result.type }}</span>
+            </div>
+
+            {% if result.type == 'Regression' %}
+                <div class="grid-2" style="margin-top: 25px; gap: 1rem;">
+                    <div class="glass-card" style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.02);">
+                        <small style="color: var(--text-muted);">R² Score (Test)</small>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">{{ result.r2 }}</div>
+                    </div>
+                    <div class="glass-card" style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.02);">
+                        <small style="color: var(--text-muted);">CV Mean (Consistency)</small>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent);">{{ result.cv_mean }}</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Error Metrics</h4>
+                    <table style="width: 100%; margin-top: 10px; color: var(--text-main);">
+                        <tr style="border-bottom: 1px solid var(--glass-border);">
+                            <td style="padding: 10px 0;">Mean Absolute Error (MAE)</td>
+                            <td style="text-align: right; font-weight: bold;">{{ result.mae }}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--glass-border);">
+                            <td style="padding: 10px 0;">Root Mean Squared Error (RMSE)</td>
+                            <td style="text-align: right; font-weight: bold;">{{ result.rmse }}</td>
+                        </tr>
+                    </table>
+                </div>
+            {% else %}
+                <div class="grid-2" style="margin-top: 25px; gap: 1rem;">
+                    <div class="glass-card" style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.02);">
+                        <small style="color: var(--text-muted);">Accuracy</small>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">{{ (result.accuracy * 100) | round(2) }}%</div>
+                    </div>
+                    <div class="glass-card" style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.02);">
+                        <small style="color: var(--text-muted);">F1-Score</small>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent);">{{ result.f1_score }}</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Classification Details</h4>
+                    <table style="width: 100%; margin-top: 10px; color: var(--text-main);">
+                        <tr style="border-bottom: 1px solid var(--glass-border);">
+                            <td style="padding: 10px 0;">Precision (Macro)</td>
+                            <td style="text-align: right; font-weight: bold;">{{ result.precision }}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--glass-border);">
+                            <td style="padding: 10px 0;">Recall (Macro)</td>
+                            <td style="text-align: right; font-weight: bold;">{{ result.recall }}</td>
+                        </tr>
+                    </table>
+                </div>
+            {% endif %}
+
+            <!-- AI Interpretation -->
+            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);">
+                <h4 style="color: var(--accent);"><i class="fas fa-robot"></i> AI Model Audit</h4>
+                <div id="ai-content" style="color: var(--text-main); line-height: 1.6;">
+                    <i class="fas fa-spinner fa-spin"></i> <span id="loading-text">Analyzing model coefficients and predictive power...</span>
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 80px 0; color: var(--text-muted);">
+                <i class="fas fa-project-diagram fa-4x mb-4" style="opacity: 0.3;"></i>
+                <p>Train a model to see predictive metrics, error distribution, and AI interpretation of model validity.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if result %}
+<script>
+    const loadingMessages = [
+        "Analyzing model coefficients...",
+        "Evaluating cross-validation folds...",
+        "Measuring predictive entropy...",
+        "Optimizing gradient descent...",
+        "Searching for generalizable patterns..."
+    ];
+    document.getElementById('loading-text').innerText = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/ai/interpret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                test_name: "Machine Learning ({{ result.type }})",
+                data_summary: "Target: {{ result.target_name }}, Features: {{ result.feature_names | join(', ') }}",
+                results: {{ result | tojson }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ai-content').innerHTML = data.interpretation;
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}
