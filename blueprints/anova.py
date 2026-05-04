@@ -4,19 +4,15 @@ import sqlite3
 
 from stats_logic.anova import anova
 from stats_logic.utils import add_to_history
+from stats_logic.sample_datasets import get_anova_samples
 
 anova_views = Blueprint("anova", __name__)
 
 @anova_views.route('/anova', methods=['GET','POST'])
 def anova_calc():
-    conn = sqlite3.connect('dataset/dataset.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM dataset")
-    datasets = cursor.fetchall()
-    conn.close()
-    
+    anova_samples = get_anova_samples()
     if request.method == 'POST':
-        groups_input = request.form.get('groups_data')
+        groups_input = request.form.get('anova_data') # Updated field name to match my previous UI change
         try:
             # Process input in format: group1:1,2,3;group2:4,5,6
             groups = {}
@@ -29,7 +25,7 @@ def anova_calc():
                 error = "ANOVA requires at least 2 groups"
                 return render_template('calculations/anova.html',
                                     error=error,
-                                    sample_data=datasets)
+                                    samples=anova_samples)
             
             arrays = list(groups.values())
             result = anova(arrays)
@@ -38,12 +34,12 @@ def anova_calc():
             return render_template('calculations/anova.html',
                                 result=result,
                                 groups=groups,
-                                sample_data=datasets,
+                                samples=anova_samples,
                                 input_data=groups_input)
         except Exception as e:
             error = f"Invalid input format. Please use format: 'group1:1,2,3;group2:4,5,6'. Error: {str(e)}"
             return render_template('calculations/anova.html',
                                  error=error,
-                                 sample_data=datasets)
+                                 samples=anova_samples)
     
-    return render_template('calculations/anova.html', sample_data=datasets)
+    return render_template('calculations/anova.html', samples=anova_samples)

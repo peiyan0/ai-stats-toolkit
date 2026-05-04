@@ -1,122 +1,192 @@
 {% extends "base.html" %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='calculations.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='datasets.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Descriptive Statistics</h2>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <form method="POST">
-                <div class="form-group">
-                    <label for="data">Enter your data (comma separated):</label>
-                    <textarea class="form-control" id="data" name="data" rows="3">{% if input_data %}{{ input_data }}{% endif %}</textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Calculate</button>
-            </form>
-            
-            <h4 class="mt-4">Sample Datasets</h4>
-            <table border="1" class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Data</th>
-                        <th>Num. of Elements</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for dataset in sample_data %}
-                    <tr>
-                        <td>{{ dataset[0] }}</td>
-                        <td>{{ dataset[1] }}</td>
-                        <td>{{ dataset[2] }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('data').value='{{ dataset[1]|replace('[', '')|replace(']', '') }}'">
-                                Use This
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="col-md-6">
-            {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
-            {% endif %}
-            
-            {% if result %}
-                <div class="card">
-                    <div class="card-header">
-                        Results
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <tr>
-                                <th>Mean</th>
-                                <td>{{ result.mean|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>Median</th>
-                                <td>{{ result.median|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>Mode</th>
-                                <td>{{ result.mode|join(', ') }}</td>
-                            </tr>
-                            <tr>
-                                <th>Range</th>
-                                <td>{{ result.range|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>Variance</th>
-                                <td>{{ result.variance|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>Standard Deviation</th>
-                                <td>{{ result.std_dev|round(4) }}</td>
-                            </tr>
-                        </table>
-                        
-                        <h5>Quartiles</h5>
-                        <table class="table">
-                            <tr>
-                                <th>Q1 (25th percentile)</th>
-                                <td>{{ result.quartiles.q1|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>Q2 (Median)</th>
-                                <td>{{ result.quartiles.q2|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>Q3 (75th percentile)</th>
-                                <td>{{ result.quartiles.q3|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>IQR (Q3-Q1)</th>
-                                <td>{{ result.quartiles.iqr|round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <th>Outliers</th>
-                                <td>
-                                    {% if result.quartiles.outliers %}
-                                        {{ result.quartiles.outliers|join(', ') }}
-                                    {% else %}
-                                        None
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            {% endif %}
+<div class="page-header" style="margin-bottom: 40px;">
+    <h1>Descriptive Statistics</h1>
+    <p style="color: var(--text-muted);">Audited & Enhanced calculation engine for deep data summarization.</p>
+</div>
+
+<div class="grid-2">
+    <!-- Input Section -->
+    <div class="glass-card animate-up">
+        <h3><i class="fas fa-edit"></i> Data Entry</h3>
+        <form method="POST" style="margin-top: 20px;">
+            <div class="form-group mb-4">
+                <label for="data">Enter your numbers (comma separated):</label>
+                <textarea class="form-control" id="data" name="data" rows="5" placeholder="e.g. 10, 20, 15, 30...">{% if input_data %}{{ input_data }}{% endif %}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Calculate Detailed Analysis</button>
+        </form>
+
+        <div style="margin-top: 40px;">
+            <h4><i class="fas fa-database"></i> Sample Datasets</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                {% for sample in samples %}
+                <button class="btn btn-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted);" 
+                        onclick="document.getElementById('data').value='{{ sample.data }}'">
+                    {{ sample.name }}
+                </button>
+                {% endfor %}
+            </div>
         </div>
     </div>
+
+    <!-- Results Section -->
+    <div class="glass-card animate-up" style="animation-delay: 0.1s;">
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+            <h3><i class="fas fa-poll"></i> Results (n={{ result.n }})</h3>
+            
+            <h5 style="margin-top: 20px; color: var(--primary);">Basic Measures</h5>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 10px;">
+                <div class="glass-card" style="padding: 1rem; background: rgba(56, 189, 248, 0.05);">
+                    <small style="color: var(--text-muted);">Arithmetic Mean</small>
+                    <div style="font-size: 1.2rem; font-weight: bold;">{{ result.mean }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(129, 140, 248, 0.05);">
+                    <small style="color: var(--text-muted);">Median</small>
+                    <div style="font-size: 1.2rem; font-weight: bold;">{{ result.median }}</div>
+                </div>
+            </div>
+
+            <h5 style="margin-top: 25px; color: var(--secondary);">Advanced Distributions</h5>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 10px;">
+                <div class="glass-card" style="padding: 1rem; background: rgba(16, 185, 129, 0.05);">
+                    <small style="color: var(--text-muted);">Harmonic Mean</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.harmonic_mean }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(245, 158, 11, 0.05);">
+                    <small style="color: var(--text-muted);">Geometric Mean</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.geometric_mean }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(16, 185, 129, 0.05);">
+                    <small style="color: var(--text-muted);">Skewness</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.skewness }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(245, 158, 11, 0.05);">
+                    <small style="color: var(--text-muted);">Kurtosis</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.kurtosis }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(244, 114, 182, 0.05);">
+                    <small style="color: var(--text-muted);">Coef. Variation (%)</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.cv }}%</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(251, 191, 36, 0.05);">
+                    <small style="color: var(--text-muted);">Standard Error</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.std_error }}</div>
+                </div>
+            </div>
+
+            <!-- AI Insight Box -->
+            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);">
+                <h4 style="color: var(--accent);"><i class="fas fa-robot" aria-hidden="true"></i> Consultant Insight</h4>
+                <div id="ai-content" style="color: var(--text-main); line-height: 1.6;">
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span id="loading-text">Polishing the bell curve...</span>
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 60px 0; color: var(--text-muted);">
+                <i class="fas fa-chart-line fa-4x mb-4"></i>
+                <p>Run a calculation to see results including Harmonic/Geometric means and Skewness.</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+{% if result %}
+<div class="grid-2 animate-up" style="margin-top: 40px; animation-delay: 0.2s;">
+    <div class="glass-card">
+        <h3><i class="fas fa-chart-area"></i> Distribution Summary</h3>
+        <div style="height: 300px; margin-top: 20px;">
+            <canvas id="distChart"></canvas>
+        </div>
+    </div>
+    <div class="glass-card">
+        <h3><i class="fas fa-list"></i> Summary Data</h3>
+        <table style="width: 100%; margin-top: 20px; color: var(--text-muted); border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid var(--glass-border);">
+                <td style="padding: 10px 0;">Sample Std Dev</td>
+                <td style="padding: 10px 0; text-align: right; color: var(--text-main);">{{ result.std_dev }}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--glass-border);">
+                <td style="padding: 10px 0;">Interquartile Range (IQR)</td>
+                <td style="padding: 10px 0; text-align: right; color: var(--text-main);">{{ result.quartiles.iqr }}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--glass-border);">
+                <td style="padding: 10px 0;">Outliers Found</td>
+                <td style="padding: 10px 0; text-align: right; color: var(--text-main);">{{ result.quartiles.outliers|length }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 0;">Range</td>
+                <td style="padding: 10px 0; text-align: right; color: var(--text-main);">{{ result.range }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% if result %}
+<script>
+    const loadingMessages = [
+        "Performing deep statistical audit...",
+        "Consulting the Central Limit Theorem...",
+        "Negotiating with the Null Hypothesis...",
+        "Checking p-values for cosmic significance...",
+        "Scanning for hidden correlations..."
+    ];
+    document.getElementById('loading-text').innerText = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // AI Interpretation
+        fetch('/ai/interpret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                test_name: "Comprehensive Descriptive Analysis",
+                data_summary: "N={{ result.n }} observations",
+                results: {{ result | tojson }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ai-content').innerHTML = data.interpretation;
+        });
+
+        // Chart
+        const ctx = document.getElementById('distChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Median', 'Q3'],
+                datasets: [{
+                    label: 'Values',
+                    data: [{{ result.quartiles.q1 }}, {{ result.quartiles.q2 }}, {{ result.quartiles.q3 }}],
+                    backgroundColor: ['rgba(56, 189, 248, 0.4)', 'rgba(129, 140, 248, 0.4)', 'rgba(244, 114, 182, 0.4)'],
+                    borderColor: ['#38bdf8', '#818cf8', '#f472b6'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#cbd5e1' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#cbd5e1' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    });
+</script>
+{% endif %}
 {% endblock %}

@@ -1,129 +1,139 @@
 {% extends "base.html" %}
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='calculations.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='datasets.css') }}">
-{% endblock %}
-
 {% block content %}
-<div class="container">
-    <h2>ANOVA (Analysis of Variance)</h2>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <form method="POST" onsubmit="removeTrailingSemicolon()">
-                <div class="form-group">
-                    <label for="groups_data">Enter your groups (format: group1:1,2,3;group2:4,5,6):</label>
-                    <textarea class="form-control" id="groups_data" name="groups_data" rows="3">{% if input_data %}{{ input_data }}{% endif %}</textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Calculate</button>
-            </form>
-            
-            <h4 class="mt-4">Sample Datasets</h4>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Data</th>
-                        <th>Num. of Elements</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for dataset in sample_data %}
-                    <tr>
-                        <td>{{ dataset[0] }}</td>
-                        <td>{{ dataset[1] }}</td>
-                        <td>{{ dataset[2] }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" 
-                                    onclick="addGroupToTextarea('group{{ loop.index }}:{{ dataset[1]|replace('[', '')|replace(']', '') }}', this)">
-                                Use This
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="page-header" style="margin-bottom: 40px;">
+    <h1>One-Way ANOVA</h1>
+    <p style="color: var(--text-muted);">Compare means across multiple independent groups with effect size analysis.</p>
+</div>
+
+<div class="grid-2">
+    <!-- Input Section -->
+    <div class="glass-card animate-up">
+        <h3><i class="fas fa-edit"></i> Data Configuration</h3>
+        <form method="POST" style="margin-top: 20px;">
+            <div class="form-group mb-4">
+                <label for="anova_data">Data Format (group:val1,val2;group2:val3,val4):</label>
+                <textarea name="anova_data" id="anova_data" class="form-control" rows="5" placeholder="Control: 10, 12, 14; Treatment: 15, 18, 20">{% if input_data %}{{ input_data }}{% endif %}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Perform ANOVA Analysis</button>
+        </form>
+        
+        <div style="margin-top: 30px;">
+            <h4><i class="fas fa-database"></i> Sample Datasets</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                {% for sample in samples %}
+                <button class="btn btn-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted);" 
+                        onclick="document.getElementById('anova_data').value='{{ sample.data }}'">
+                    {{ sample.name }}
+                </button>
+                {% endfor %}
+            </div>
         </div>
         
-        <div class="col-md-6">
-            {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
-            {% endif %}
-            
-            {% if result %}
-                <div class="card">
-                    <div class="card-header">
-                        ANOVA Results
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <tr>
-                                <th>Number of Groups (k)</th>
-                                <td>{{ result.k }}</td>
-                            </tr>
-                            <tr>
-                                <th>Total Observations (n)</th>
-                                <td>{{ result.n }}</td>
-                            </tr>
-                            <tr>
-                                <th>Grand Mean</th>
-                                <td>{{ result.grand_mean }}</td>
-                            </tr>
-                            <tr>
-                                <th>Sum of Squares Between (SSB)</th>
-                                <td>{{ result.SSB }}</td>
-                            </tr>
-                            <tr>
-                                <th>Sum of Squares Within (SSW)</th>
-                                <td>{{ result.SSW }}</td>
-                            </tr>
-                            <tr>
-                                <th>Mean Square Between (MSB)</th>
-                                <td>{{ result.MSB }}</td>
-                            </tr>
-                            <tr>
-                                <th>Mean Square Within (MSW)</th>
-                                <td>{{ result.MSW }}</td>
-                            </tr>
-                            <tr>
-                                <th>F-test Statistic</th>
-                                <td>{{ result.F_test }}</td>
-                            </tr>
-                            <tr>
-                                <th>Degrees of Freedom (Between)</th>
-                                <td>{{ result.df_between }}</td>
-                            </tr>
-                            <tr>
-                                <th>Degrees of Freedom (Within)</th>
-                                <td>{{ result.df_within }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            {% endif %}
+        <div style="margin-top: 30px; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px dashed var(--glass-border);">
+            <small style="color: var(--text-muted);"><i class="fas fa-info-circle"></i> Use semicolons to separate groups and commas for values within each group.</small>
         </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="glass-card animate-up" style="animation-delay: 0.1s;">
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+            <h3><i class="fas fa-table"></i> ANOVA Summary Table</h3>
+            
+            <div style="margin-top: 20px; overflow-x: auto;">
+                <table style="width: 100%; color: var(--text-muted); border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--glass-border); text-align: left;">
+                            <th style="padding: 10px;">Source</th>
+                            <th style="padding: 10px;">SS</th>
+                            <th style="padding: 10px;">df</th>
+                            <th style="padding: 10px;">MS</th>
+                            <th style="padding: 10px;">F</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--glass-border);">
+                            <td style="padding: 12px; color: var(--primary);">Between</td>
+                            <td style="padding: 12px;">{{ result.SSB }}</td>
+                            <td style="padding: 12px;">{{ result.df_between }}</td>
+                            <td style="padding: 12px;">{{ result.MSB }}</td>
+                            <td style="padding: 12px; font-weight: bold; color: var(--text-main);">{{ result.F_test }}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--glass-border);">
+                            <td style="padding: 12px; color: var(--secondary);">Within</td>
+                            <td style="padding: 12px;">{{ result.SSW }}</td>
+                            <td style="padding: 12px;">{{ result.df_within }}</td>
+                            <td style="padding: 12px;">{{ result.MSW }}</td>
+                            <td style="padding: 12px;">-</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; font-weight: bold;">Total</td>
+                            <td style="padding: 12px;">{{ result.SST }}</td>
+                            <td style="padding: 12px;">{{ result.n - 1 }}</td>
+                            <td style="padding: 12px;">-</td>
+                            <td style="padding: 12px;">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="grid-2" style="margin-top: 30px; gap: 1rem;">
+                <div class="glass-card" style="padding: 1rem; background: rgba(16, 185, 129, 0.05); text-align: center;">
+                    <small style="color: var(--text-muted);">Eta Squared (η²)</small>
+                    <div style="font-size: 1.2rem; font-weight: bold; color: #10b981;">{{ result.eta_squared }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(129, 140, 248, 0.05); text-align: center;">
+                    <small style="color: var(--text-muted);">Omega Squared (ω²)</small>
+                    <div style="font-size: 1.2rem; font-weight: bold; color: #818cf8;">{{ result.omega_squared }}</div>
+                </div>
+            </div>
+
+            <!-- AI Insight Box -->
+            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);">
+                <h4 style="color: var(--accent);"><i class="fas fa-robot" aria-hidden="true"></i> Consultant Insight</h4>
+                <div id="ai-content" style="color: var(--text-main); line-height: 1.6;">
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span id="loading-text">Interpreting variance patterns...</span>
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 60px 0; color: var(--text-muted);">
+                <i class="fas fa-microscope fa-4x mb-4"></i>
+                <p>Input group data to generate a complete ANOVA table and effect size analysis.</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 
+{% if result %}
 <script>
-    function addGroupToTextarea(groupData, button) {
-        const textarea = document.getElementById('groups_data');
-        // Append the group data with a semicolon
-        textarea.value += groupData + ';';
+    const loadingMessages = [
+        "Interpreting variance patterns...",
+        "Decomposing sum of squares into stardust...",
+        "Comparing cosmic means...",
+        "Evaluating group-level enlightenment...",
+        "Finding the signal in the galactic noise..."
+    ];
+    document.getElementById('loading-text').innerText = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
 
-        // Change the button text to "Selected"
-        button.innerText = 'Selected';
-        button.disabled = true; // Disable the button to prevent re-selection
-    }
-
-    function removeTrailingSemicolon() {
-        const textarea = document.getElementById('groups_data');
-        // Remove the trailing semicolon if it exists
-        if (textarea.value.endsWith(';')) {
-            textarea.value = textarea.value.slice(0, -1);
-        }
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/ai/interpret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                test_name: "One-Way ANOVA",
+                data_summary: "K={{ result.k }}, N={{ result.n }}",
+                results: {{ result | tojson }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ai-content').innerHTML = data.interpretation;
+        });
+    });
 </script>
+{% endif %}
 {% endblock %}

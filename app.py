@@ -9,6 +9,10 @@ from blueprints.anova import anova_views
 from blueprints.confidence import confidence_views
 from blueprints.descriptive import descriptive_views
 from blueprints.linear import linear_views
+from blueprints.ai_assistant import ai_assistant_views
+from blueprints.probability import probability_views
+from blueprints.t_test import t_test_views
+from blueprints.predictive import predictive_views
 
 load_dotenv()
 app = Flask(__name__)
@@ -18,6 +22,10 @@ app.register_blueprint(anova_views, url_prefix='/calculations')
 app.register_blueprint(confidence_views, url_prefix='/calculations')
 app.register_blueprint(descriptive_views, url_prefix='/calculations')
 app.register_blueprint(linear_views, url_prefix='/calculations')
+app.register_blueprint(probability_views, url_prefix='/calculations')
+app.register_blueprint(t_test_views, url_prefix='/calculations')
+app.register_blueprint(predictive_views, url_prefix='/calculations')
+app.register_blueprint(ai_assistant_views, url_prefix='/ai')
 
 # initialize history
 @app.before_request

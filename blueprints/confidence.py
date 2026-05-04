@@ -4,26 +4,14 @@ import sqlite3
 
 from stats_logic.confidence_intervals import two_pop_CI, dep_data, two_samp_prop
 from stats_logic.utils import add_to_history
+from stats_logic.sample_datasets import get_confidence_samples
 
 confidence_views = Blueprint("confidence", __name__)
 
 @confidence_views.route('/confidence', methods=['GET','POST'])
 def confidence_intervals():
     calculation_type = request.args.get('type', 'two_pop')
-    conn = sqlite3.connect('dataset/dataset.db')
-    cursor = conn.cursor()
-    
-    if calculation_type == 'two_pop':
-        cursor.execute("SELECT * FROM two_pops")
-        sample_data = cursor.fetchall()
-    elif calculation_type == 'dep_data':
-        cursor.execute("SELECT * FROM dataset WHERE num_elements > 5")
-        sample_data = cursor.fetchall()
-    else:  # two_samp_prop
-        cursor.execute("SELECT * FROM dataset WHERE num_elements = 2")
-        sample_data = cursor.fetchall()  
-    
-    conn.close()
+    ci_samples = get_confidence_samples()
     
     if request.method == 'POST':
         if calculation_type == 'two_pop':
@@ -49,13 +37,13 @@ def confidence_intervals():
                 return render_template('calculations/confidence.html',
                                      result=result,
                                      calculation_type=calculation_type,
-                                     sample_data=sample_data)
+                                     samples=ci_samples)
             except ValueError:
                 error = "Invalid input. Please enter numeric values."
                 return render_template('calculations/confidence.html',
                                      error=error,
                                      calculation_type=calculation_type,
-                                     sample_data=sample_data)
+                                     samples=ci_samples)
         
         elif calculation_type == 'dep_data':
             try:
@@ -67,7 +55,7 @@ def confidence_intervals():
                     return render_template('calculations/confidence.html',
                                          error=error,
                                          calculation_type=calculation_type,
-                                         sample_data=sample_data)
+                                         samples=ci_samples)
                 
                 result = dep_data([before, after])
                 
@@ -78,13 +66,13 @@ def confidence_intervals():
                 return render_template('calculations/confidence.html',
                                      result=result,
                                      calculation_type=calculation_type,
-                                     sample_data=sample_data)
+                                     samples=ci_samples)
             except ValueError:
                 error = "Invalid input. Please enter numbers separated by commas."
                 return render_template('calculations/confidence.html',
                                      error=error,
                                      calculation_type=calculation_type,
-                                     sample_data=sample_data)
+                                     samples=ci_samples)
         
         elif calculation_type == 'two_samp_prop':
             try:
@@ -102,14 +90,24 @@ def confidence_intervals():
                 return render_template('calculations/confidence.html',
                                      result=result,
                                      calculation_type=calculation_type,
-                                     sample_data=sample_data)
+                                     samples=ci_samples)
             except ValueError:
                 error = "Invalid input. Please enter numeric values."
                 return render_template('calculations/confidence.html',
                                      error=error,
                                      calculation_type=calculation_type,
-                                     sample_data=sample_data)
+                                     samples=ci_samples)
     
     return render_template('calculations/confidence.html',
                          calculation_type=calculation_type,
-                         sample_data=sample_data)
+                         samples=ci_samples,
+                         pre_load={
+                             'n1': request.args.get('n1', ''),
+                             'x1': request.args.get('x1', ''),
+                             's1': request.args.get('s1', ''),
+                             'n2': request.args.get('n2', ''),
+                             'x2': request.args.get('x2', ''),
+                             's2': request.args.get('s2', ''),
+                             't': request.args.get('t', ''),
+                             'var': request.args.get('var', 'equal')
+                         })

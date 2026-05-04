@@ -1,80 +1,180 @@
 {% extends "base.html" %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='calculations.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='datasets.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Linear Regression</h2>
-    
-    <div class="row">
-        <div class="col-md-6">
-            <form method="POST">
-                <div class="form-group">
-                    <label for="x_data">X Values (comma separated)</label>
-                    <textarea class="form-control" id="x_data" name="x_data" rows="3">{% if x_data %}{{ x_data }}{% endif %}</textarea>
-                </div>
-                <div class="form-group">
-                    <label for="y_data">Y Values (comma separated)</label>
-                    <textarea class="form-control" id="y_data" name="y_data" rows="3">{% if y_data %}{{ y_data }}{% endif %}</textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Calculate</button>
-            </form>
-            
-            <h4 class="mt-4">Sample Datasets</h4>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Data</th>
-                        <th>Num. of Elements</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for dataset in sample_data %}
-                    <tr>
-                        <td>{{ dataset[0] }}</td>
-                        <td>{{ dataset[1] }}</td>
-                        <td>{{ dataset[2] }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" 
-                                    onclick="document.getElementById('x_data').value='{{ dataset[1]|replace('[', '')|replace(']', '') }}';">
-                                Use This for X
-                            </button>
-                            <button class="btn btn-sm btn-secondary" 
-                                    onclick="document.getElementById('y_data').value='{{ dataset[1]|replace('[', '')|replace(']', '') }}';">
-                                Use This for Y
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="page-header" style="margin-bottom: 40px;">
+    <h1>Linear Regression Modeling</h1>
+    <p style="color: var(--text-muted);">Build predictive models and analyze correlations with diagnostic depth.</p>
+</div>
+
+<div class="grid-2">
+    <!-- Input Section -->
+    <div class="glass-card animate-up">
+        <h3><i class="fas fa-edit"></i> Model Training Data</h3>
+        <form method="POST" style="margin-top: 20px;">
+            <div class="form-group mb-3">
+                <label for="x_data">X Values (Independent):</label>
+                <textarea name="x_data" id="x_data" class="form-control" rows="3" placeholder="e.g. 1, 2, 3, 4, 5">{% if x_data %}{{ x_data }}{% endif %}</textarea>
+            </div>
+            <div class="form-group mb-4">
+                <label for="y_data">Y Values (Dependent):</label>
+                <textarea name="y_data" id="y_data" class="form-control" rows="3" placeholder="e.g. 2, 4, 5, 4, 5">{% if y_data %}{{ y_data }}{% endif %}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Train Model</button>
+        </form>
+
+        <div style="margin-top: 30px;">
+            <h4><i class="fas fa-database"></i> Sample Datasets</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                {% for sample in samples %}
+                <button class="btn btn-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted);" 
+                        onclick="document.getElementById('x_data').value='{{ sample.x }}'; document.getElementById('y_data').value='{{ sample.y }}'">
+                    {{ sample.name }}
+                </button>
+                {% endfor %}
+            </div>
         </div>
-        
-        <div class="col-md-6">
-            {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
-            {% endif %}
-            
-            {% if result %}
-                <div class="card">
-                    <div class="card-header">
-                        Regression Results
-                    </div>
-                    <div class="card-body">
-                        <p>{{ result.equation }}</p>
-                        <p>{{ result.r_squared }}</p>
-                        <p>{{ result.correlation }}</p>
-                        
-                     </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="glass-card animate-up" style="animation-delay: 0.1s;">
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+            <h3><i class="fas fa-microchip"></i> Model Diagnostics</h3>
+            <div class="glass-card" style="margin: 20px 0; background: rgba(56, 189, 248, 0.1); text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">{{ result.equation }}</div>
+                <small style="color: var(--text-muted);">Predictive Equation</small>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="glass-card" style="padding: 1rem; background: rgba(129, 140, 248, 0.05);">
+                    <small style="color: var(--text-muted);">R² (Determination)</small>
+                    <div style="font-size: 1.2rem; font-weight: bold;">{{ result.r_squared }}</div>
                 </div>
-            {% endif %}
-        </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(244, 114, 182, 0.05);">
+                    <small style="color: var(--text-muted);">r (Correlation)</small>
+                    <div style="font-size: 1.2rem; font-weight: bold;">{{ result.correlation }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(16, 185, 129, 0.05);">
+                    <small style="color: var(--text-muted);">Std Error of Est.</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.std_error_est }}</div>
+                </div>
+                <div class="glass-card" style="padding: 1rem; background: rgba(251, 191, 36, 0.05);">
+                    <small style="color: var(--text-muted);">Mean Squared Error</small>
+                    <div style="font-size: 1.1rem; font-weight: bold;">{{ result.mse }}</div>
+                </div>
+            </div>
+
+            <!-- AI Insight Box -->
+            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);">
+                <h4 style="color: var(--accent);"><i class="fas fa-robot" aria-hidden="true"></i> Consultant Insight</h4>
+                <div id="ai-content" style="color: var(--text-main); line-height: 1.6;">
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span id="loading-text">Analyzing model fit...</span>
+                </div>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 60px 0; color: var(--text-muted);">
+                <i class="fas fa-project-diagram fa-4x mb-4"></i>
+                <p>Input paired X and Y data to generate your regression model and visualization.</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 
+{% if result %}
+<div class="glass-card animate-up" style="margin-top: 40px; animation-delay: 0.2s;">
+    <h3><i class="fas fa-chart-line"></i> Regression Plot</h3>
+    <div style="height: 400px; margin-top: 20px;">
+        <canvas id="regressionChart"></canvas>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% if result %}
+<script>
+    const loadingMessages = [
+        "Analyzing model fit...",
+        "Drafting regression lines in the sand...",
+        "Calculating cosmic correlations...",
+        "Seeking the line of best destiny...",
+        "Reducing residuals to stardust..."
+    ];
+    document.getElementById('loading-text').innerText = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // AI Interpretation
+        fetch('/ai/interpret', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                test_name: "Linear Regression Analysis",
+                data_summary: "N={{ result.n }} observations",
+                results: {{ result | tojson }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ai-content').innerHTML = data.interpretation;
+        });
+
+        // Chart Data Preparation
+        const xDataRaw = "{{ x_data }}".split(',');
+        const yDataRaw = "{{ y_data }}".split(',');
+        const xData = xDataRaw.map(Number);
+        const yData = yDataRaw.map(Number);
+        
+        const scatterData = xData.map((x, i) => ({ x: x, y: yData[i] }));
+        
+        // Generate line points
+        const minX = Math.min(...xData);
+        const maxX = Math.max(...xData);
+        const lineData = [
+            { x: minX, y: {{ result.intercept }} + {{ result.slope }} * minX },
+            { x: maxX, y: {{ result.intercept }} + {{ result.slope }} * maxX }
+        ];
+
+        const ctx = document.getElementById('regressionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Observations',
+                        data: scatterData,
+                        backgroundColor: 'rgba(244, 114, 182, 0.6)',
+                        borderColor: '#f472b6',
+                        pointRadius: 6
+                    },
+                    {
+                        label: 'Regression Line',
+                        data: lineData,
+                        type: 'line',
+                        borderColor: '#38bdf8',
+                        borderWidth: 3,
+                        fill: false,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Independent variable (X)', color: '#cbd5e1' }, ticks: { color: '#cbd5e1' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Dependent variable (Y)', color: '#cbd5e1' }, ticks: { color: '#cbd5e1' } }
+                }
+            }
+        });
+    });
+</script>
+{% endif %}
 {% endblock %}
