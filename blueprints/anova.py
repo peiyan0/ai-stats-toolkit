@@ -2,8 +2,8 @@
 from flask import Blueprint, request, render_template
 import sqlite3
 
-from statisticss.anova import anova
-from statisticss.utils import add_to_history
+from stats_logic.anova import anova
+from stats_logic.utils import add_to_history
 
 anova_views = Blueprint("anova", __name__)
 

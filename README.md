@@ -84,11 +84,13 @@ statistics-toolkit/
 ├── dataset/                 # Sample datasets
 │   └── dataset.db           # SQLite database
 │   └── script.py            # Script to insert datasets
-├── statisticss/             # Statistical functions
+├── stats_logic/             # Statistical functions
 │   ├── descriptive.py       # Descriptive stats functions
 │   └── ...                  # Other statistical modules
+├── docs/                    # Documentation and notes
 ├── requirements.txt         # Python dependencies
 └── app.py                   # Main application entry point
+└── main.py                  # CLI entry point
 ```
   
 ![App Screenshot](static/screenshot.png)

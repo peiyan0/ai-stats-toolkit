@@ -2,8 +2,8 @@
 from flask import Blueprint, request, render_template
 import sqlite3
 
-from statisticss.linear_regression import linear_regression
-from statisticss.utils import add_to_history
+from stats_logic.linear_regression import linear_regression
+from stats_logic.utils import add_to_history
 
 linear_views = Blueprint("linear", __name__)
 

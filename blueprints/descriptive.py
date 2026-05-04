@@ -2,8 +2,8 @@
 from flask import Blueprint, request, render_template
 import sqlite3
 
-from statisticss.descriptive import mean, median, mode, range, variance, std_dev
-from statisticss.utils import add_to_history
+from stats_logic.descriptive import mean, median, mode, range, variance, std_dev
+from stats_logic.utils import add_to_history
 
 descriptive_views = Blueprint("descriptive", __name__)
 

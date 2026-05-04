@@ -2,8 +2,8 @@
 from flask import Blueprint, request, render_template
 import sqlite3
 
-from statisticss.confidence_intervals import two_pop_CI, dep_data, two_samp_prop
-from statisticss.utils import add_to_history
+from stats_logic.confidence_intervals import two_pop_CI, dep_data, two_samp_prop
+from stats_logic.utils import add_to_history
 
 confidence_views = Blueprint("confidence", __name__)
 
