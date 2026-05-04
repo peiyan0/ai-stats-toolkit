@@ -1,4 +1,3 @@
 flask
-virtualenv
-sqlite3
-json
+python-dotenv
+requests
