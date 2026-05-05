@@ -36,9 +36,12 @@ def predictive_dashboard():
             n = len(y)
             for f in features:
                 if len(f) != n:
-                    return render_template('calculations/predictive.html', error="All variables must have the same number of data points.")
+                    return render_template('calculations/predictive.html', 
+                                        error="All variables must have the same number of data points.",
+                                        samples=samples)
             
-            result = train_predictive_model(y, features, model_type)
+            from stats_logic.utils import sanitize_data
+            result = sanitize_data(train_predictive_model(y, features, model_type, feature_names=feature_names))
             
             if "error" in result:
                 return render_template('calculations/predictive.html', error=result["error"])
