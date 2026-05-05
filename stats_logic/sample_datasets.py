@@ -3,6 +3,25 @@ import datasets
 def format_list(l):
     return ",".join(map(str, l))
 
+def get_t_test_samples():
+    """
+    Returns sample data specifically for two-group t-tests.
+    """
+    return [
+        {
+            "name": "Clinical Trial (Effectiveness)",
+            "data": "Experimental: 18.5, 21.2, 19.8, 22.1, 20.5; Control: 15.2, 16.8, 14.9, 17.1, 15.8"
+        },
+        {
+            "name": "Education (Test Scores)",
+            "data": "Method A: 85, 92, 88, 95, 90, 87; Method B: 78, 82, 80, 85, 79, 81"
+        },
+        {
+            "name": "Manufacturing (Durability)",
+            "data": "Factory A: 120, 125, 118, 122; Factory B: 112, 115, 110, 114"
+        }
+    ]
+
 def get_anova_samples():
     samples = []
     for i, data in enumerate(datasets.anova_set):

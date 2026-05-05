@@ -1,13 +1,13 @@
 from flask import Blueprint, request, render_template
 from stats_logic.hypothesis_testing import two_sample_t_test
 from stats_logic.utils import add_to_history
-from stats_logic.sample_datasets import get_anova_samples # Reusing group logic
+from stats_logic.sample_datasets import get_t_test_samples
 
 t_test_views = Blueprint("t_test", __name__)
 
 @t_test_views.route('/t-test', methods=['GET', 'POST'])
 def t_test_calc():
-    samples = get_anova_samples() # Can use same group format
+    samples = get_t_test_samples()
     if request.method == 'POST':
         data_input = request.form.get('t_test_data')
         try:
@@ -26,7 +26,8 @@ def t_test_calc():
             data1 = groups[group_names[0]]
             data2 = groups[group_names[1]]
             
-            result = two_sample_t_test(data1, data2)
+            from stats_logic.utils import sanitize_data
+            result = sanitize_data(two_sample_t_test(data1, data2))
             
             add_to_history('T-test', groups, result)
             return render_template('calculations/t_test.html',

@@ -27,8 +27,9 @@ def anova_calc():
                                     error=error,
                                     samples=anova_samples)
             
+            from stats_logic.utils import sanitize_data
             arrays = list(groups.values())
-            result = anova(arrays)
+            result = sanitize_data(anova(arrays))
             
             add_to_history('ANOVA', groups, result)
             return render_template('calculations/anova.html',
