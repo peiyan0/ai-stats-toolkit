@@ -13,6 +13,7 @@ from blueprints.ai_assistant import ai_assistant_views
 from blueprints.probability import probability_views
 from blueprints.t_test import t_test_views
 from blueprints.predictive import predictive_views
+from blueprints.export import export_views
 
 load_dotenv()
 app = Flask(__name__)
@@ -25,6 +26,7 @@ app.register_blueprint(linear_views, url_prefix='/calculations')
 app.register_blueprint(probability_views, url_prefix='/calculations')
 app.register_blueprint(t_test_views, url_prefix='/calculations')
 app.register_blueprint(predictive_views, url_prefix='/calculations')
+app.register_blueprint(export_views, url_prefix='/ai')
 app.register_blueprint(ai_assistant_views, url_prefix='/ai')
 
 # initialize history
