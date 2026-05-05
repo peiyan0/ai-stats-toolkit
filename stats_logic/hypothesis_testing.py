@@ -51,6 +51,11 @@ def two_sample_t_test(data1, data2, equal_var=True):
     t_stat = (x1_bar - x2_bar) / se
     p_val = stats.t.sf(abs(t_stat), df) * 2
     
+    # Assumption Checks
+    normality1 = stats.shapiro(data1).pvalue
+    normality2 = stats.shapiro(data2).pvalue
+    levene_p = stats.levene(data1, data2).pvalue
+    
     return {
         "t_stat": round(t_stat, 4),
         "p_value": round(p_val, 4),
@@ -58,5 +63,10 @@ def two_sample_t_test(data1, data2, equal_var=True):
         "mean1": round(x1_bar, 4),
         "mean2": round(x2_bar, 4),
         "mean_diff": round(x1_bar - x2_bar, 4),
-        "se": round(se, 4)
+        "se": round(se, 4),
+        "assumptions": {
+            "normality_p": [round(normality1, 4), round(normality2, 4)],
+            "homogeneity_p": round(levene_p, 4),
+            "valid": normality1 > 0.05 and normality2 > 0.05 and levene_p > 0.05
+        }
     }

@@ -1,10 +1,18 @@
+from scipy import stats
+
 def anova(arrays):
     """
-    Performs One-Way ANOVA with effect size calculations.
+    Performs One-Way ANOVA with effect size and assumption checking.
     """
     k = len(arrays)
     n = sum(len(array) for array in arrays)
     if n <= k: return {"error": "Sample size too small for ANOVA."}
+    
+    # Calculate ANOVA
+    f_stat, p_val = stats.f_oneway(*arrays)
+    
+    # Assumption Check (Levene's)
+    levene_p = stats.levene(*arrays).pvalue
     
     grand_mean = sum(sum(array) for array in arrays) / n
 
@@ -18,27 +26,24 @@ def anova(arrays):
     MSB = SSB / df_between
     MSW = SSW / df_within
     
-    if MSW == 0: return {"error": "Within-group variance is zero."}
-    
-    F_test = MSB / MSW
-    
-    # Effect Size Calculations
+    # Effect Size
     eta_sq = SSB / SST
-    # Omega squared is a less biased estimate of effect size
     omega_sq = (SSB - df_between * MSW) / (SST + MSW)
     
     return {
         "k": k,
         "n": n,
+        "p_value": round(p_val, 4),
+        "f_test": round(f_stat, 4),
+        "levene_p": round(levene_p, 4),
         "grand_mean": round(grand_mean, 4),
         "SSB": round(SSB, 4),
         "SSW": round(SSW, 4),
         "SST": round(SST, 4),
         "MSB": round(MSB, 4),
         "MSW": round(MSW, 4),
-        "F_test": round(F_test, 4),
         "df_between": df_between,
         "df_within": df_within,
         "eta_squared": round(eta_sq, 4),
-        "omega_squared": round(max(0, omega_sq), 4) # Can be negative in small samples
+        "omega_squared": round(max(0, omega_sq), 4)
     }
