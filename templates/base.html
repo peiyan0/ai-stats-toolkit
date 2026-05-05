@@ -3,8 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Statistics Toolkit{% endblock %}</title>
+    <title>{% block title %}Statistics Toolkit | AI-Augmented Analytics & Predictive Modeling{% endblock %}</title>
     
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="A professional-grade, local-first statistics platform. Perform T-tests, ANOVA, and Predictive Modeling with private AI insights via Ollama. Secure, high-precision research tools.">
+    <meta name="keywords" content="statistics software, predictive analytics, AI statistics, T-test calculator, ANOVA tool, local AI research, data science toolkit, Ollama statistics">
+    <meta name="author" content="StatToolkit Team">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="Statistics Toolkit | AI-Augmented Analytics">
+    <meta property="og:description" content="Professional-grade predictive analytics with local AI insights. Private, secure, and precise.">
+    <meta property="og:image" content="{{ url_for('static', filename='img/og-image.png') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.url }}">
+    <meta property="twitter:title" content="Statistics Toolkit | AI-Augmented Analytics">
+    <meta property="twitter:description" content="Professional-grade predictive analytics with local AI insights. Private, secure, and precise.">
+    <meta property="twitter:image" content="{{ url_for('static', filename='img/og-image.png') }}">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Statistics Toolkit",
+      "operatingSystem": "All",
+      "applicationCategory": "ResearchApplication",
+      "description": "Professional-grade predictive analytics platform with local AI integration.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Predictive Modeling",
+        "Hypothesis Testing (T-test, ANOVA)",
+        "Local AI Insights via Ollama",
+        "WCAG 2.2 AA Accessibility",
+        "Data Export (CSV)"
+      ]
+    }
+    </script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,17 +107,17 @@
                     <h3>StatToolkit</h3>
                     <p style="color: var(--text-main);">Empowering researchers with local-first, AI-augmented statistical tools.</p>
                     <div style="display: flex; gap: 15px; margin-top: 20px;">
-                        <a href="https://github.com/peiyan0/python-statistic-app" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted);"><i class="fab fa-github fa-lg"></i></a>
-                        <a href="https://www.linkedin.com/in/howpeiyan/" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted);"><i class="fab fa-linkedin fa-lg"></i></a>
-                        <a href="https://portfolio-peiyan.vercel.app/" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted);"><i class="fas fa-briefcase fa-lg"></i></a>
+                        <a href="https://github.com/peiyan0/python-statistic-app" target="_blank" rel="noopener noreferrer" class="social-link" style="color: var(--text-muted);"><i class="fab fa-github fa-lg"></i></a>
+                        <a href="https://www.linkedin.com/in/howpeiyan/" target="_blank" rel="noopener noreferrer" class="social-link" style="color: var(--text-muted);"><i class="fab fa-linkedin fa-lg"></i></a>
+                        <a href="https://portfolio-peiyan.vercel.app/" target="_blank" rel="noopener noreferrer" class="social-link" style="color: var(--text-muted);"><i class="fas fa-briefcase fa-lg"></i></a>
                     </div>
                 </div>
                 <div>
                     <h4>Quick Links</h4>
                     <ul style="list-style: none; padding: 0;">
-                        <li><a href="/how_to_use" style="color: var(--text-muted); text-decoration: none; display: block; margin-bottom: 8px;">Documentation</a></li>
-                        <li><a href="/datasets" style="color: var(--text-muted); text-decoration: none; display: block; margin-bottom: 8px;">Sample Data</a></li>
-                        <li><a href="/history" style="color: var(--text-muted); text-decoration: none; display: block; margin-bottom: 8px;">History</a></li>
+                        <li><a href="/how_to_use" class="footer-link">Documentation</a></li>
+                        <li><a href="/datasets" class="footer-link">Sample Data</a></li>
+                        <li><a href="/history" class="footer-link">History</a></li>
                     </ul>
                 </div>
                 <div>
