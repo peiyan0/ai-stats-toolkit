@@ -8,22 +8,26 @@
 
 <div class="grid-2">
     <!-- Input Section -->
-    <div class="glass-card animate-up">
-        <h3><i class="fas fa-edit"></i> Group Configuration</h3>
+    <div class="glass-card animate-up" role="region" aria-labelledby="input-header">
+        <h3 id="input-header"><i class="fas fa-edit" aria-hidden="true"></i> Group Configuration</h3>
         <form method="POST" style="margin-top: 20px;">
             <div class="form-group mb-4">
-                <label for="t_test_data">Data Format (group1:v1,v2;group2:v3,v4):</label>
-                <textarea name="t_test_data" id="t_test_data" class="form-control" rows="5" placeholder="Experimental: 15, 18, 22; Control: 12, 14, 16">{% if input_data %}{{ input_data }}{% endif %}</textarea>
+                <label for="t_test_data">Data Input <small>(Format: group1:v1,v2; group2:v3,v4)</small>:</label>
+                <textarea name="t_test_data" id="t_test_data" class="form-control" rows="5" 
+                          aria-describedby="format-hint"
+                          placeholder="Experimental: 15, 18, 22; Control: 12, 14, 16">{% if input_data %}{{ input_data }}{% endif %}</textarea>
+                <div id="format-hint" class="visually-hidden">Enter two group names followed by a colon and comma-separated values, separated by a semicolon.</div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Perform T-Test Analysis</button>
+            <button type="submit" class="btn btn-primary w-100" aria-label="Perform T-Test Analysis">Perform Analysis</button>
         </form>
         
         <div style="margin-top: 30px;">
-            <h4><i class="fas fa-database"></i> Sample Datasets</h4>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+            <h4><i class="fas fa-database" aria-hidden="true"></i> Sample Datasets</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;" role="group" aria-label="Available sample datasets">
                 {% for sample in samples %}
                 <button class="btn btn-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted);" 
-                        onclick="document.getElementById('t_test_data').value='{{ sample.data }}'">
+                        onclick="document.getElementById('t_test_data').value='{{ sample.data }}'"
+                        aria-label="Load {{ sample.name }} dataset">
                     {{ sample.name }}
                 </button>
                 {% endfor %}
@@ -32,22 +36,25 @@
     </div>
 
     <!-- Results Section -->
-    <div class="glass-card animate-up" style="animation-delay: 0.1s;">
+    <div class="glass-card animate-up" style="animation-delay: 0.1s;" role="region" aria-labelledby="results-header">
         {% if error %}
-            <div class="alert alert-danger">{{ error }}</div>
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ error }}
+            </div>
         {% endif %}
 
         {% if result %}
-            <h3><i class="fas fa-poll"></i> Statistical Results</h3>
+            <h3 id="results-header"><i class="fas fa-poll" aria-hidden="true"></i> Statistical Results</h3>
             
             <div class="grid-2" style="margin-top: 25px; gap: 1.5rem;">
                 <div class="glass-card" style="padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--primary);">
                     <small style="color: var(--text-muted);">T-Statistic</small>
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--text-main);">{{ result.t_stat }}</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--text-main);" aria-label="T-Statistic value: {{ result.t_stat }}">{{ result.t_stat }}</div>
                 </div>
                 <div class="glass-card" style="padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--accent);">
                     <small style="color: var(--text-muted);">P-Value</small>
-                    <div style="font-size: 2rem; font-weight: bold; color: {% if result.p_value < 0.05 %}#10b981{% else %}#ef4444{% endif %};">
+                    <div style="font-size: 2rem; font-weight: bold; color: {% if result.p_value < 0.05 %}#10b981{% else %}#ef4444{% endif %};" 
+                         aria-label="P-Value: {{ result.p_value }} {% if result.p_value < 0.05 %}(Significant){% else %}(Not Significant){% endif %}">
                         {{ result.p_value }}
                     </div>
                 </div>
@@ -56,19 +63,19 @@
             <div style="margin-top: 30px;">
                 <table style="width: 100%; color: var(--text-muted); border-collapse: collapse;">
                     <tr style="border-bottom: 1px solid var(--glass-border);">
-                        <td style="padding: 12px;"><i class="fas fa-ruler"></i> Degrees of Freedom (df)</td>
+                        <td style="padding: 12px;"><i class="fas fa-ruler" aria-hidden="true"></i> Degrees of Freedom (df)</td>
                         <td style="padding: 12px; text-align: right; color: var(--text-main);">{{ result.df }}</td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--glass-border);">
-                        <td style="padding: 12px;"><i class="fas fa-arrows-alt-h"></i> Mean Difference</td>
+                        <td style="padding: 12px;"><i class="fas fa-arrows-alt-h" aria-hidden="true"></i> Mean Difference</td>
                         <td style="padding: 12px; text-align: right; color: var(--text-main);">{{ result.mean_diff }}</td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--glass-border);">
-                        <td style="padding: 12px;"><i class="fas fa-wave-square"></i> Standard Error</td>
+                        <td style="padding: 12px;"><i class="fas fa-wave-square" aria-hidden="true"></i> Standard Error</td>
                         <td style="padding: 12px; text-align: right; color: var(--text-main);">{{ result.se }}</td>
                     </tr>
                     <tr>
-                        <td style="padding: 12px;"><i class="fas fa-users"></i> Group Means</td>
+                        <td style="padding: 12px;"><i class="fas fa-users" aria-hidden="true"></i> Group Means</td>
                         <td style="padding: 12px; text-align: right; color: var(--text-main);">
                             {{ group_names[0] }}: {{ result.mean1 }} | {{ group_names[1] }}: {{ result.mean2 }}
                         </td>
@@ -76,16 +83,56 @@
                 </table>
             </div>
 
+            <!-- Assumption Audit -->
+            <div class="glass-card" style="margin-top: 25px; padding: 1.25rem; border: 1px solid {% if result.assumptions.valid %}rgba(16, 185, 129, 0.3){% else %}rgba(239, 68, 68, 0.3){% endif %}; background: {% if result.assumptions.valid %}rgba(16, 185, 129, 0.03){% else %}rgba(239, 68, 68, 0.03){% endif %};"
+                 role="complementary" aria-label="Assumption Audit Results">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h4 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; color: var(--text-muted); font-weight: 700;">Data Rigor Audit</h4>
+                        <p style="font-size: 0.7rem; color: var(--text-muted); margin: 2px 0 0 0;">Parametric assumptions for valid inference</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 20px; background: {% if result.assumptions.valid %}rgba(16, 185, 129, 0.1){% else %}rgba(239, 68, 68, 0.1){% endif %}; border: 1px solid {% if result.assumptions.valid %}#10b981{% else %}#ef4444{% endif %};">
+                        <i class="fas {% if result.assumptions.valid %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}" 
+                           style="color: {% if result.assumptions.valid %}#10b981{% else %}#ef4444{% endif %}; font-size: 0.9rem;"></i>
+                        <span style="font-size: 0.75rem; font-weight: 800; color: {% if result.assumptions.valid %}#10b981{% else %}#ef4444{% endif %}; letter-spacing: 1px;">
+                            {% if result.assumptions.valid %}PASSED{% else %}FAIL{% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-chart-bar" style="color: var(--text-muted); width: 16px; font-size: 0.8rem;"></i>
+                            <span style="font-size: 0.85rem;">Normality <small>(Shapiro-Wilk)</small></span>
+                        </div>
+                        <span style="font-family: var(--font-mono); font-size: 0.85rem; color: {% if result.assumptions.normality_p[0] > 0.05 and result.assumptions.normality_p[1] > 0.05 %}#10b981{% else %}#ef4444{% endif %};">
+                            p={{ result.assumptions.normality_p[0] }}, {{ result.assumptions.normality_p[1] }}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-equals" style="color: var(--text-muted); width: 16px; font-size: 0.8rem;"></i>
+                            <span style="font-size: 0.85rem;">Homogeneity <small>(Levene's)</small></span>
+                        </div>
+                        <span style="font-family: var(--font-mono); font-size: 0.85rem; color: {% if result.assumptions.homogeneity_p > 0.05 %}#10b981{% else %}#ef4444{% endif %};">
+                            p={{ result.assumptions.homogeneity_p }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <!-- AI Insight Box -->
-            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);">
+            <div id="ai-insight" class="glass-card" style="margin-top: 25px; border-left: 4px solid var(--accent); background: rgba(244, 114, 182, 0.05);"
+                 aria-live="polite">
                 <h4 style="color: var(--accent);"><i class="fas fa-robot" aria-hidden="true"></i> Consultant Insight</h4>
                 <div id="ai-content" style="color: var(--text-main); line-height: 1.6;">
-                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span id="loading-text">Negotiating with the Null Hypothesis...</span>
+                    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span id="loading-text">Analyzing significance thresholds...</span>
                 </div>
             </div>
         {% else %}
             <div style="text-align: center; padding: 60px 0; color: var(--text-muted);">
-                <i class="fas fa-balance-scale fa-4x mb-4"></i>
+                <i class="fas fa-balance-scale fa-4x mb-4" aria-hidden="true"></i>
                 <p>Input group data to compare means and determine statistical significance.</p>
             </div>
         {% endif %}

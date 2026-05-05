@@ -84,7 +84,22 @@
                         </tr>
                     </table>
                 </div>
-            {% else %}
+
+                <div style="margin-top: 30px;">
+                    <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 15px;">Feature Impact Audit</h4>
+                    {% for name, val in result.feature_importance.items() %}
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                            <span>{{ name }}</span>
+                            <span style="color: var(--primary);">{{ val }}</span>
+                        </div>
+                        <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
+                            <div style="height: 100%; background: var(--primary); width: {{ [val * 10, 100] | min }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+{% else %}
                 <div class="grid-2" style="margin-top: 25px; gap: 1rem;">
                     <div class="glass-card" style="padding: 1rem; text-align: center; background: rgba(255,255,255,0.02);">
                         <small style="color: var(--text-muted);">Accuracy</small>
