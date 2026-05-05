@@ -6,8 +6,41 @@
         <h1>Calculation History</h1>
         <p style="color: var(--text-muted);">A comprehensive log of your past statistical analyses.</p>
     </div>
-    <div style="color: var(--text-muted); font-size: 0.9rem;">
-        <i class="fas fa-folder-open"></i> {{ history|length if history else 0 }} Sessions Saved
+    <div style="text-align: right;">
+        <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">
+            <i class="fas fa-folder-open"></i> {{ history|length if history else 0 }} Sessions Saved
+        </div>
+        {% if history and history|length > 0 %}
+        <a href="/ai/export/history" class="btn btn-export animate-hover" 
+           aria-label="Export calculation history as CSV file"
+           style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.2)); 
+                  color: #10b981; 
+                  border: 1px solid rgba(16, 185, 129, 0.3);
+                  padding: 10px 20px;
+                  border-radius: 12px;
+                  text-decoration: none;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 10px;
+                  font-weight: 600;
+                  font-size: 0.85rem;
+                  transition: var(--transition-smooth);
+                  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);">
+            <i class="fas fa-file-csv" style="font-size: 1.1rem;"></i> 
+            <span>Export Research CSV</span>
+        </a>
+        <style>
+            .btn-export:hover {
+                transform: translateY(-2px);
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.25)) !important;
+                box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
+                border-color: rgba(16, 185, 129, 0.5);
+            }
+            .btn-export:active {
+                transform: translateY(0);
+            }
+        </style>
+        {% endif %}
     </div>
 </div>
 
@@ -33,13 +66,33 @@
             </div>
             <div>
                 <small style="color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.05em;">Key Result</small>
-                <div style="background: rgba(56, 189, 248, 0.05); padding: 10px; border-radius: 8px; margin-top: 5px; font-size: 0.9rem;">
+                <div style="background: rgba(56, 189, 248, 0.05); padding: 10px; border-radius: 8px; margin-top: 5px; font-size: 0.85rem;">
                     {% if entry.type == 'ANOVA' %}
-                        F-Value: <strong>{{ entry.result_data.F_test|round(4) if entry.result_data.F_test is defined else 'N/A' }}</strong>
+                        F: <strong>{{ entry.result_data.f_test }}</strong> | p: <strong>{{ entry.result_data.p_value }}</strong>
+                    {% elif entry.type == 'T-test' %}
+                        t: <strong>{{ entry.result_data.t_stat }}</strong> | p: <strong>{{ entry.result_data.p_value }}</strong>
+                    {% elif 'ML' in entry.type %}
+                        {% if entry.result_data.accuracy is defined %}
+                            Acc: <strong>{{ (entry.result_data.accuracy * 100)|round(1) }}%</strong>
+                        {% elif entry.result_data.r2 is defined %}
+                            R²: <strong>{{ entry.result_data.r2|round(4) }}</strong>
+                        {% else %}
+                            Result: <strong style="font-size: 0.75rem;">Model Trained Successfully</strong>
+                        {% endif %}
                     {% elif entry.type == 'Linear Regression' %}
-                        Eq: <strong>{{ entry.result_data.equation if entry.result_data.equation is defined else 'N/A' }}</strong>
-                    {% else %}
+                        R²: <strong>{{ entry.result_data.r_squared|round(4) if entry.result_data.r_squared is defined else 'N/A' }}</strong>
+                    {% elif entry.type == 'Descriptive Statistics' %}
                         Mean: <strong>{{ entry.result_data.mean|round(4) if entry.result_data.mean is defined else 'N/A' }}</strong>
+                    {% elif entry.type in ['Two Population CI', 'Dependent Data T-Test', 'Two Sample Proportion'] %}
+                        <div style="font-size: 0.75rem; white-space: pre-line;">{{ entry.result_data }}</div>
+                    {% elif entry.type == 'Normal Distribution' %}
+                        Prob: <strong>{{ entry.result_data.probability if entry.result_data.probability is defined else 'N/A' }}</strong>
+                    {% else %}
+                        {% if entry.result_data is mapping %}
+                            Result: <strong>{{ entry.result_data.p_value if entry.result_data.p_value is defined else 'N/A' }}</strong>
+                        {% else %}
+                            {{ entry.result_data|truncate(100) }}
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
