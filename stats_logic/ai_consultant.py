@@ -1,5 +1,6 @@
 import requests
 import json
+from stats_logic.rag_engine import RAGEngine
 
 class AIConsultant:
     def __init__(self, model="phi3.5:3.8b"):
@@ -7,6 +8,8 @@ class AIConsultant:
         self.base_url = "http://127.0.0.1:11434/api"
         self.generate_url = f"{self.base_url}/generate"
         self.tags_url = f"{self.base_url}/tags"
+        # Initialize high-craft RAG engine
+        self.rag = RAGEngine(model=model)
 
     def is_available(self):
         """Checks if Ollama is running and the model is pulled."""
@@ -21,10 +24,18 @@ class AIConsultant:
 
     def interpret_results(self, test_name, data_summary, results):
         """
-        Interprets statistical results using local Ollama.
+        Interprets statistical results using local Ollama, augmented with RAG context.
         """
+        # Retrieve context from local APA 7th standards
+        rag_context = self.rag.retrieve_relevant_context(
+            f"How to report {test_name} result in APA 7th style with metrics {json.dumps(results)}"
+        )
+        
         prompt = f"""<|system|>
-You are a Senior Statistical Consultant. Interpret the results below concisely. Provide exactly 3 bullet points. Do not repeat context or system instructions.
+You are a Senior Statistical Consultant. Interpret the results below concisely. Provide exactly 3 bullet points. 
+Do not repeat context, system instructions, or notes.
+Ground your interpretation in these verified standards if applicable:
+{rag_context}
 
 <|user|>
 CONTEXT:
@@ -76,11 +87,19 @@ ANALYSIS GUIDELINES:
 
     def get_test_recommendation(self, user_goal, data_type, group_count):
         """
-        Uses AI to recommend a statistical test based on user input.
+        Uses AI to recommend a statistical test based on user input, augmented with RAG decision tree context.
         Optimized for Phi-3.5 with strict formatting to prevent instruction leakage.
         """
+        # Retrieve decision criteria context from local matrix
+        rag_context = self.rag.retrieve_relevant_context(
+            f"Select test for objective: {user_goal} with data type: {data_type} and {group_count} groups"
+        )
+        
         prompt = f"""<|system|>
-You are a Senior Statistical Methodologist. Provide a precise, single-test recommendation based on the user's research design. Do not repeat these instructions in your response.
+You are a Senior Statistical Methodologist. Provide a precise, single-test recommendation based on the user's research design.
+Do not repeat these instructions in your response.
+Ground your decision in this decision matrix reference:
+{rag_context}
 
 <|user|>
 RESEARCH DESIGN:

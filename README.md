@@ -24,16 +24,20 @@ The Statistics Toolkit is designed for researchers, data scientists, and student
 
 *   **🛡️ Automated Assumption Audit**: Never run a biased test again. Every inference tool automatically validates **Normality** (Shapiro-Wilk) and **Homogeneity** (Levene's) before presenting results.
 *   **🤖 Local AI Insights**: Powered by **Ollama**, the toolkit provides plain-English interpretations of complex p-values and coefficients—100% private and zero-cost.
+*   **🧠 Local Hybrid RAG Engine**: Features a **Retrieval-Augmented Generation (RAG)** pipeline. AI recommendations and results interpretation are grounded in a local statistical knowledge base (e.g., APA 7th standards, test decision matrixes).
+    *   *Semantic Embedding Match*: Matches search queries with local text chunks using local embedding vectors.
+    *   *Zero-Dependency TF-IDF Fallback*: Automatically transitions to an optimized, pure-Python search index if the local embedding API is offline.
 *   **📈 Model Audit Dashboard**: Visualize **Feature Impact** and Error Metrics (MAE, RMSE, R²) in real-time to understand what drives your predictions.
 *   **♿ Inclusive Design**: Fully compliant with **WCAG 2.2 AA** standards, featuring aria-live regions, high-contrast themes, and full keyboard navigation support.
 *   **📥 Professional Data Export**: Export your entire calculation history as a research-ready **CSV file** for use in academic manuscripts or external BI tools.
+
 
 ## 💻 Tech Stack
 
 *   **Backend**: Python 3.12+ (Flask)
 *   **Analytics**: Scikit-Learn, SciPy, NumPy, Statsmodels
 *   **AI Engine**: Ollama (Local Model Integration)
-*   **Frontend**: Vanilla JS, Chart.js, CSS Glassmorphism
+*   **Frontend**: Vanilla JS, Chart.js 
 *   **Accessibility**: WCAG 2.2 AA Standardized
 
 ## 🚀 Getting Started
