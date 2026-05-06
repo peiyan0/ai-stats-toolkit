@@ -1,6 +1,5 @@
 # confidence interval for 2 populations
 def two_pop_CI(args):
-    print("Confidence Interval for Two Populations:")
     pop1, pop2, t, e = args
     n1, x1, s1 = pop1
     n2, x2, s2 = pop2
@@ -18,10 +17,6 @@ def two_pop_CI(args):
 
     moe = t*Sx1_x2 # margin of error
     mean_diff = x1 - x2
-    print(e)
-    print(f'df: {df}')
-    print(f"= ({x1} - {x2}) +- {t}({Sx1_x2:.4f})")
-    print(f"= {mean_diff:.4f} +- {moe:.4f}")
     lower_bound = mean_diff - moe
     upper_bound = mean_diff + moe
     t_test = mean_diff / Sx1_x2
@@ -29,7 +24,6 @@ def two_pop_CI(args):
 
 # dependant data 
 def dep_data(args):
-    print("Dependent Data T-Test:")
     before, after = args
     d = [i - j for i,j in zip(before, after)] 
     n = len(before)
@@ -41,7 +35,6 @@ def dep_data(args):
 
 # 2 sample proportion
 def two_samp_prop(args):
-    print("Two Sample Proportion")
     pop1, pop2 = args
     n1,p1 = pop1
     n2,p2 = pop2
@@ -50,4 +43,4 @@ def two_samp_prop(args):
     p_mean = (x1+x2) / (n1+n2)
     q_mean = 1 - p_mean
     z_test = (p1-p2)/((p_mean*q_mean)*(1/n1 + 1/n2))**0.5
-    return f"z-test: {z_test:.4f}"
+    return f"z-test: {z_test:.4f}"
