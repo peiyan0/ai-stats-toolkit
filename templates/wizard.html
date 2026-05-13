@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='wizard.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="wizard-container">
     <div class="glass-card">
@@ -60,171 +64,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-<style>
-.wizard-container {
-    padding: 40px 0;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.glass-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-.glass-input {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: white !important;
-    border-radius: 10px;
-}
-
-.glass-input option {
-    background: #222;
-    color: white;
-}
-
-.glow-button {
-    background: linear-gradient(45deg, #007bff, #00d4ff);
-    border: none;
-    padding: 12px 30px;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
-}
-
-.glow-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 25px rgba(0, 123, 255, 0.8);
-}
-
-.recommendation-box {
-    background: rgba(56, 189, 248, 0.1);
-    border-left: 5px solid var(--primary);
-    padding: 30px;
-    border-radius: 12px;
-}
-
-.recommendation-text {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: var(--text-main);
-}
-
-.neural-loader {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
-}
-
-.brain-pulse {
-    animation: brainPulse 2s infinite ease-in-out;
-}
-
-.scan-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--primary);
-    box-shadow: 0 0 15px var(--primary);
-    animation: scanMove 3s infinite linear;
-}
-
-@keyframes brainPulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 0px var(--primary-glow)); }
-    50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 20px var(--primary-glow)); }
-}
-
-@keyframes scanMove {
-    0% { top: 0; opacity: 0; }
-    50% { opacity: 1; }
-    100% { top: 100%; opacity: 0; }
-}
-
-.animate-pulse {
-    animation: pulseText 2s infinite;
-}
-
-@keyframes pulseText {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
-}
-</style>
-
-<script>
-const messages = [
-    "Consulting the statistical oracle...",
-    "Negotiating with the Null Hypothesis...",
-    "Polishing the bell curve...",
-    "Checking p-values for cosmic significance...",
-    "Ensuring our data is organic and locally sourced...",
-    "Avoiding Type II errors in the quantum realm...",
-    "Asking the Normal Distribution for its expert opinion...",
-    "Searching for hidden correlations in the static...",
-    "Applying Laplace transforms to your curiosity..."
-];
-
-let msgInterval;
-
-document.getElementById('wizard-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = this;
-    const loading = document.getElementById('loading-state');
-    const result = document.getElementById('result-container');
-    const msgEl = document.getElementById('loading-msg');
-    
-    form.style.display = 'none';
-    loading.style.display = 'block';
-    
-    // Rotate messages
-    let i = 0;
-    msgInterval = setInterval(() => {
-        i = (i + 1) % messages.length;
-        msgEl.style.opacity = 0;
-        setTimeout(() => {
-            msgEl.innerText = messages[i];
-            msgEl.style.opacity = 1;
-        }, 300);
-    }, 4500);
-    
-    // AJAX Submit
-    const data = {
-        goal: document.getElementById('goal').value,
-        data_type: document.getElementById('data_type').value,
-        groups: document.getElementById('groups').value
-    };
-    
-    fetch("{{ url_for('ai_assistant.wizard') }}", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        clearInterval(msgInterval);
-        loading.style.display = 'none';
-        result.style.display = 'block';
-        document.getElementById('recommendation-text').innerHTML = data.recommendation;
-    })
-    .catch(err => {
-        clearInterval(msgInterval);
-        alert("The oracle is temporarily silent. Please check your connection.");
-        resetWizard();
-    });
-});
-
-function resetWizard() {
-    document.getElementById('result-container').style.display = 'none';
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('wizard-form').style.display = 'block';
-}
-</script>
+{% block scripts %}
+<script src="{{ url_for('static', filename='wizard.js') }}"></script>
 {% endblock %}
