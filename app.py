@@ -1,6 +1,8 @@
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables before importing blueprints
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from datetime import datetime
-from dotenv import load_dotenv
 import os
 import sqlite3 
 import json
@@ -15,7 +17,6 @@ from blueprints.t_test import t_test_views
 from blueprints.predictive import predictive_views
 from blueprints.export import export_views
 
-load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')
 
