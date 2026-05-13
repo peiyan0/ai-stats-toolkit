@@ -16,14 +16,16 @@ The Statistics Toolkit is designed for researchers, data scientists, and student
 | :---: | :--- | :--- |
 | **Predictive Suite** | Advanced **Machine Learning** for forecasting. | **Linear/Logistic Regression**, Feature Importance, Cross-Validation. |
 | **Inferential Logic** | Scientific **Hypothesis Testing** & Validation. | **Independent T-Test**, **One-Way ANOVA**, Assumption Auditing. |
-| **AI Consultant** | Private AI-driven results interpretation. | **"Which Test?" Wizard**, Statistical Logic Analysis (Ollama). |
+| **AI Consultant** | Private AI-driven results interpretation. | **"Which Test?" Wizard**, **Automated APA 7th Results Writer**, **AI Dataset Profiler & Clean**. |
 | **Descriptive Data** | Comprehensive summary statistics. | Mean, Median, Skewness, Kurtosis, Outlier Detection. |
 | **Data Persistence** | Secure result management & portability. | **CSV Research Export**, SQLite Session History. |
 
 ## 🌟 Premium Features
 
 *   **🛡️ Automated Assumption Audit**: Never run a biased test again. Every inference tool automatically validates **Normality** (Shapiro-Wilk) and **Homogeneity** (Levene's) before presenting results.
-*   **🤖 Local AI Insights**: Powered by **Ollama**, the toolkit provides plain-English interpretations of complex p-values and coefficients—100% private and zero-cost.
+*   **🤖 Local & Cloud AI Insights**: Supports a **dual-channel hybrid routing engine**. Seamlessly connects to direct cloud endpoints or falls back to a local **Ollama** server. Provides plain-English interpretations of complex stats.
+*   **📄 Automated APA 7th Results Writer**: Instantly drafts flawless, publication-ready "Results and Analysis" sections adhering strictly to the APA 7th Edition manual guidelines, formatting standard italicized notations (*t*, *F*, *p*, *d*, *df*) with precise statistical figures.
+*   **📊 AI Dataset Profiling & Clean**: Probes variable structures, identifies skewness and distribution anomalies, runs IQR outlier detection, and suggests target-specific cleaning protocols inside an immersive, glassmorphic viewport.
 *   **🧠 Local Hybrid RAG Engine**: Features a **Retrieval-Augmented Generation (RAG)** pipeline. AI recommendations and results interpretation are grounded in a local statistical knowledge base (e.g., APA 7th standards, test decision matrixes).
     *   *Semantic Embedding Match*: Matches search queries with local text chunks using local embedding vectors.
     *   *Zero-Dependency TF-IDF Fallback*: Automatically transitions to an optimized, pure-Python search index if the local embedding API is offline.
@@ -59,7 +61,6 @@ We are continuously evolving the toolkit to meet the needs of modern researchers
 
 *   **📊 Advanced Visual Diagnostics**: Integration of Violin plots, Q-Q plots, and Residual dashboards for deeper model validation.
 *   **⚖️ Bayesian Module**: Moving beyond frequentist p-values with Bayesian credible intervals and posterior distribution modeling.
-*   **📄 Automated APA Reporting**: One-click generation of publication-ready PDF reports formatted to APA 7th Edition or IEEE standards.
 *   **📉 Time-Series Forecasting**: Implementation of ARIMA and Prophet models for sequential data analysis and trend prediction.
 *   **🧠 Deep Learning Integration**: A neural network wizard for building simple Keras/PyTorch models with automated hyperparameter tuning.
 *   **🔐 Encrypted Cloud Sync**: Optional, end-to-end encrypted synchronization for multi-device research collaboration.
