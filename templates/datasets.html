@@ -3,7 +3,7 @@
 {% block content %}
 <div class="page-header" style="margin-bottom: 40px;">
     <h1>Curated Datasets</h1>
-    <p style="color: var(--text-muted);">Explore sample data designed for testing statistical models.</p>
+    <p style="color: var(--text-muted);">Explore sample data and run advanced automated AI dataset profiling & cleaning recommendations.</p>
 </div>
 
 <div style="margin-bottom: 60px;">
@@ -15,12 +15,15 @@
                 <span class="ai-badge" style="background: rgba(56, 189, 248, 0.1); color: var(--primary);">ID: #{{ dataset[0] }}</span>
                 <span style="font-size: 0.8rem; color: var(--text-muted);">{{ dataset[2] }} items</span>
             </div>
-            <div style="background: rgba(15, 23, 42, 0.4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: var(--text-muted); word-break: break-all; max-height: 100px; overflow-y: auto;">
+            <div style="background: rgba(15, 23, 42, 0.4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: var(--text-muted); word-break: break-all; max-height: 100px; overflow-y: auto; margin-bottom: 20px;">
                 {{ dataset[1] }}
             </div>
-            <div style="margin-top: 20px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 {% set raw_data = dataset[1]|replace('[', '')|replace(']', '')|replace(' ', '') %}
-                <a href="/calculations/descriptive?data={{ raw_data }}" class="btn btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border);">Use in Analysis</a>
+                <a href="/calculations/descriptive?data={{ raw_data }}" class="btn btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); font-size: 0.85rem;">Use in Analysis</a>
+                <button class="btn btn-sm" onclick="profileDataset('General Dataset #{{ dataset[0] }}', {{ dataset[1] }})" style="background: rgba(244, 114, 182, 0.1); color: var(--accent); border: 1px solid rgba(244, 114, 182, 0.2); font-size: 0.85rem;">
+                    <i class="fas fa-brain"></i> AI Profile & Clean
+                </button>
             </div>
         </div>
         {% endfor %}
@@ -43,18 +46,143 @@
                     <code style="font-size: 0.8rem;">{{ pop[2] }}</code>
                 </div>
             </div>
-            <div style="display: flex; gap: 15px; font-size: 0.85rem; color: var(--text-muted);">
+            <div style="display: flex; gap: 15px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
                 <span><i class="fas fa-chart-line"></i> t-val: <strong>{{ pop[3] }}</strong></span>
                 <span><i class="fas fa-balance-scale"></i> Var: <strong>{{ pop[4] }}</strong></span>
             </div>
-            <div style="margin-top: 20px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 {% set g1 = pop[1]|replace('[', '')|replace(']', '')|replace(' ', '') %}
                 {% set g2 = pop[2]|replace('[', '')|replace(']', '')|replace(' ', '') %}
                 <a href="/calculations/confidence?type=two_pop&n1={{ g1.split(',')|length }}&x1={{ pop[3] }}&s1=1&n2={{ g2.split(',')|length }}&x2={{ pop[3] }}&s2=1&t={{ pop[3] }}&var={{ pop[4] }}" 
-                   class="btn btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border);">Load CI Model</a>
+                   class="btn btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); font-size: 0.85rem;">Load CI Model</a>
+                <button class="btn btn-sm" onclick="profileDataset('Comparison Case #{{ pop[0] }} (Combined)', {{ pop[1] }} ? {{ pop[1] }}.concat({{ pop[2] }}) : [])" style="background: rgba(244, 114, 182, 0.1); color: var(--accent); border: 1px solid rgba(244, 114, 182, 0.2); font-size: 0.85rem;">
+                    <i class="fas fa-brain"></i> AI Profile
+                </button>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const profileLoadingMessages = [
+        "Analyzing data distribution vectors...",
+        "Identifying numerical skewness and anomalies...",
+        "Executing outlier detection algorithms (IQR)...",
+        "Formulating optimal data cleaning protocol...",
+        "Matching variables with potential parametric models..."
+    ];
+
+    function profileDataset(name, values) {
+        const modal = document.getElementById('profiler-modal');
+        const loader = document.getElementById('modal-loader');
+        const content = document.getElementById('modal-content');
+        const loaderMsg = document.getElementById('loader-msg');
+        
+        document.getElementById('modal-title').innerHTML = `<i class="fas fa-robot"></i> AI Dataset Profile: ${name}`;
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.style.opacity = '1', 50);
+        
+        loader.style.display = 'block';
+        content.style.display = 'none';
+        
+        let msgIndex = 0;
+        loaderMsg.innerText = profileLoadingMessages[0];
+        const msgInterval = setInterval(() => {
+            msgIndex = (msgIndex + 1) % profileLoadingMessages.length;
+            loaderMsg.innerText = profileLoadingMessages[msgIndex];
+        }, 1800);
+        
+        fetch('/ai/profile_dataset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dataset_name: name, values: values })
+        })
+        .then(res => res.json())
+        .then(data => {
+            clearInterval(msgInterval);
+            loader.style.display = 'none';
+            content.style.display = 'block';
+            
+            // Basic markdown-to-html transformation helper for modal readability
+            let rawProfile = data.profile || "Error getting profile.";
+            let cleanHtml = rawProfile
+                .replace(/### (.*)/g, '<h5 style="color: var(--accent); margin-top: 20px; font-weight: bold;">$1</h5>')
+                .replace(/## (.*)/g, '<h4 style="color: var(--primary); margin-top: 25px; font-weight: bold;">$1</h4>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/• (.*)/g, '<li style="margin-left: 15px; margin-bottom: 8px;">$1</li>')
+                .replace(/\n/g, '<br>');
+                
+            content.innerHTML = cleanHtml;
+        })
+        .catch(err => {
+            clearInterval(msgInterval);
+            loader.style.display = 'none';
+            content.style.display = 'block';
+            content.innerHTML = `<div class="alert alert-danger">Failed to connect to local AI engine. Ensure Ollama is running.</div>`;
+        });
+    }
+    
+    function closeProfiler() {
+        const modal = document.getElementById('profiler-modal');
+        if (modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+    }
+
+    // Attach Escape key and backdrop clicks for ultimate modal accessibility
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('profiler-modal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProfiler();
+                }
+            });
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeProfiler();
+        }
+    });
+</script>
+
+{% block modal %}
+<!-- Redesigned AI Dataset Profiler Modal at Root level (No transform contamination) -->
+<div id="profiler-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(8, 10, 18, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 15000; justify-content: center; align-items: center; padding: 1.5rem; opacity: 0; transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+    <div class="glass-card" style="width: 100%; max-width: 800px; max-height: 85vh; overflow-y: auto; position: relative; border-color: rgba(244, 114, 182, 0.2); box-shadow: 0 25px 50px -12px rgba(244, 114, 182, 0.15); padding: 2.5rem; border-radius: 24px; background: rgba(30, 41, 59, 0.85);">
+        <!-- Modern Rounded Close Button -->
+        <button onclick="closeProfiler()" aria-label="Close Profile Report" style="position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); width: 36px; height: 36px; border-radius: 50%; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); z-index: 10;" onmouseover="this.style.background='rgba(244, 114, 182, 0.15)'; this.style.color='var(--accent)'; this.style.borderColor='rgba(244, 114, 182, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='var(--text-muted)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <h3 id="modal-title" style="color: var(--accent); margin-bottom: 20px; font-size: 1.6rem; display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fas fa-robot"></i> AI Dataset Profile Report</h3>
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin-bottom: 24px;">
+        
+        <div id="modal-loader" style="text-align: center; padding: 50px 0;">
+            <div style="font-size: 3.5rem; color: var(--accent); margin-bottom: 20px; animation: pulse 1.5s infinite; display: inline-block;"><i class="fas fa-brain"></i></div>
+            <h5 id="loader-msg" style="font-size: 1.15rem; color: var(--text-main); margin-bottom: 8px;">Analyzing data distribution metrics...</h5>
+            <p style="color: var(--text-muted); font-size: 0.92rem;">Connecting to private local AI engine via Ollama...</p>
+        </div>
+        
+        <div id="modal-content" style="color: var(--text-main); line-height: 1.8; display: none; font-size: 1.05rem;">
+            <!-- Profile Markdown output will render here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px var(--accent)); }
+        100% { transform: scale(1); opacity: 0.8; }
+    }
+</style>
 {% endblock %}
